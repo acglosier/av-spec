@@ -1,4 +1,4 @@
-openapi: "3.0.0"
+openapi: 3.0.0
 info:
   version: 1.0.0
   title: AV HTTP 1.1
@@ -9,7 +9,7 @@ info:
     email: support@arecontvision.com
     url: support.arecontvision.com
 servers:
-  - url: http://<camera IP address>
+  - url: 'http://<camera IP address>'
 tags:
   - name: JPEG/MJPEG
     description: Pull JPEG images individually or full MJPEG streams.
@@ -51,7 +51,8 @@ paths:
             Request down-scaled images. Because you preset downscaled image settings (through the UI or the /set endpoint), this parameter does not require size information.
           schema:
             type: string
-            enum: scaled
+            enum: [scaled]
+        - $ref: '#/components/parameters/sd'
       responses:
         '200':
           description: Returns a stream
@@ -59,9 +60,10 @@ paths:
             multipart/x-mixed-replace; boundary=fbdr:
               schema:
                 type: string
-                enum: [--fbdr]
-                example: "--fbdr\/r/\n"
-        
+                enum:
+                  - '--fbdr'
+                example: |
+                  --fbdr/r/
   /image:
     get:
       summary: Get a JPEG Frame
@@ -83,29 +85,29 @@ paths:
             type: integer
             minimum: 1
             maximum: 21
-        - in: query
-          name: ID
+        - name: ID
+          in: query
           description: |
             Ignored by the camera, but you might set random IDs to force browsers to refresh a frame. Some browsers might display a cached image if a previous URL is reused without modifying the ID field
           schema:
             type: integer
             minimum: 1
       responses:
-        200:
+        '200':
           description: Returns an image
           content:
             multipart/x-mixed-replace; boundary=fbdr:
               schema:
                 type: string
-                enum: [--fbdr]
-                example: "--fbdr\/r/n"
-        
+                enum:
+                  - '--fbdr'
+                example: '--fbdr/r/n'
   /h264:
     get:
-      tags: 
+      tags:
         - h.264 Streaming
       summary: Pull an H.264 Frame
-      description: |+
+      description: |
         Pull H.264 frames from cameras. The first frame or the stream is always an IDR (Intra) frame followed by multiple P (Inter) frames. The default number of P-frames is 50, and can be modified via register 3:21 using one of the following HTTP commands —
 
         http://camera_ip/set?keyframeinterval=(0..100)
@@ -125,7 +127,7 @@ paths:
         - $ref: '#/components/parameters/bitrate'
         - $ref: '#/components/parameters/intra_period'
       responses:
-        200:
+        '200':
           description: |
             Returns a stream according to the parameters in your request.
 
@@ -134,13 +136,13 @@ paths:
             multipart/x-mixed-replace; boundary=fbdr:
               schema:
                 type: string
-                enum: [--fbdr]
-                example: "--fbdr\/r/n"
-        
+                enum:
+                  - '--fbdr'
+                example: '--fbdr/r/n'
   /h264stream:
     get:
       summary: Pull an H.264 Video Stream
-      tags: 
+      tags:
         - h.264 Streaming
       description: |
         Pull a continuous H.264 video stream with boundary-separated frames.
@@ -162,20 +164,20 @@ paths:
             Request down-scaled images. Because you preset downscaled image settings (through the UI or the /set endpoint), this parameter does not require size information.
           schema:
             type: string
-            enum: scaled
+            enum: [scaled]
+        - $ref: '#/components/parameters/sd'
       responses:
-        200:
+        '200':
           description: |
             Returns a stream according to the parameters in your request.
           content:
             multipart/x-mixed-replace; boundary=fbdr:
               schema:
                 type: string
-                enum: [--fbdr]
-                example: "--fbdr\/r/n"
-        
-        
-  /get{channel}:
+                enum:
+                  - '--fbdr'
+                example: '--fbdr/r/n'
+  '/get{channel}':
     get:
       tags:
         - Configuration
@@ -190,21 +192,13 @@ paths:
             type: integer
             minimum: 1
             maximum: 4
-        #  - $ref: '#/components/parameters/mdzonesize'
-      #  - $ref: '#/components/parameters/mdlevelthreshold'
-      #  - $ref: '#/components/parameters/mddetail'
-      #  - $ref: '#/components/parameters/mdprivacymask'
-      #  - $ref: '#/components/parameters/mdresult'
-  # mdzonesize, pmaskleft, streamip, rtpport, sapip
       responses:
-        200:
+        '200':
           description: Returns the parameters specified in the query.
           content:
             text/plain:
               schema:
                 type: string
-       
-
   /get:
     get:
       tags:
@@ -326,9 +320,29 @@ paths:
         - $ref: '#/components/parameters/sensorcount'
         - $ref: '#/components/parameters/scaling'
         - $ref: '#/components/parameters/scaling_size'
-
+        - $ref: '#/components/parameters/sd_codec'
+        - $ref: '#/components/parameters/sd_fps'
+        - $ref: '#/components/parameters/sd_recording'
+        - $ref: '#/components/parameters/sd_networkfail'
+        - $ref: '#/components/parameters/sd_motionalarm'
+        - $ref: '#/components/parameters/sd_ioalarm'
+        - $ref: '#/components/parameters/sd_stampspan'
+        - $ref: '#/components/parameters/sd_imgleft'
+        - $ref: '#/components/parameters/sd_imgright'
+        - $ref: '#/components/parameters/sd_imgtop'
+        - $ref: '#/components/parameters/sd_imgbottom'
+        - $ref: '#/components/parameters/sd_imgres'
+        - $ref: '#/components/parameters/qos_enabled'
+        - $ref: '#/components/parameters/qos_video'
+        - $ref: '#/components/parameters/qos_default'
+        - $ref: '#/components/parameters/ipv6enabled'
+        - $ref: '#/components/parameters/ipv6address'
+        - $ref: '#/components/parameters/ipv6prefixlen'
+        - $ref: '#/components/parameters/ipv6dhcp'
+        - $ref: '#/components/parameters/ipv6addresstype'
+        - $ref: '#/components/parameters/ipv6acceptrouters'
       responses:
-        200:
+        '200':
           description: Returns the parameters specified in the query.
           content:
             text/plain:
@@ -445,13 +459,33 @@ paths:
                   - $ref: '#/components/schemas/irpos_chan2'
                   - $ref: '#/components/schemas/snapstream'
                   - $ref: '#/components/schemas/sensorcount'
-        
+                  - $ref: '#/components/schemas/sd_codec'
+                  - $ref: '#/components/schemas/sd_fps'
+                  - $ref: '#/components/schemas/sd_recording'
+                  - $ref: '#/components/schemas/sd_networkfail'
+                  - $ref: '#/components/schemas/sd_motionalarm'
+                  - $ref: '#/components/schemas/sd_ioalarm'
+                  - $ref: '#/components/schemas/sd_stampspan'
+                  - $ref: '#/components/schemas/sd_imgleft'
+                  - $ref: '#/components/schemas/sd_imgright'
+                  - $ref: '#/components/schemas/sd_imgtop'
+                  - $ref: '#/components/schemas/sd_imgbottom'
+                  - $ref: '#/components/schemas/sd_imgres'
+                  - $ref: '#/components/schemas/qos_enabled'
+                  - $ref: '#/components/schemas/qos_video'
+                  - $ref: '#/components/schemas/qos_default'
+                  - $ref: '#/components/schemas/ipv6enabled'
+                  - $ref: '#/components/schemas/ipv6address'
+                  - $ref: '#/components/schemas/ipv6prefixlen'
+                  - $ref: '#/components/schemas/ipv6dhcp'
+                  - $ref: '#/components/schemas/ipv6addresstype'
+                  - $ref: '#/components/schemas/ipv6acceptrouters'
   /set:
     post:
       summary: Set Camera Settings
       tags:
         - Configuration
-      description: Set camera settings. 
+      description: Set camera settings.
       parameters:
         - $ref: '#/components/parameters/day_binning'
         - $ref: '#/components/parameters/night_binning'
@@ -553,9 +587,30 @@ paths:
         - $ref: '#/components/parameters/snapstream'
         - $ref: '#/components/parameters/scaling'
         - $ref: '#/components/parameters/scaling_size'
-      
+        - $ref: '#/components/parameters/sd_codec'
+        - $ref: '#/components/parameters/sd_fps'
+        - $ref: '#/components/parameters/sd_recording'
+        - $ref: '#/components/parameters/sd_networkfail'
+        - $ref: '#/components/parameters/sd_motionalarm'
+        - $ref: '#/components/parameters/sd_ioalarm'
+        - $ref: '#/components/parameters/sd_stampspan'
+        - $ref: '#/components/parameters/sd_playbackstamp'
+        - $ref: '#/components/parameters/sd_imgleft'
+        - $ref: '#/components/parameters/sd_imgright'
+        - $ref: '#/components/parameters/sd_imgtop'
+        - $ref: '#/components/parameters/sd_imgbottom'
+        - $ref: '#/components/parameters/sd_imgres'
+        - $ref: '#/components/parameters/qos_enabled'
+        - $ref: '#/components/parameters/qos_video'
+        - $ref: '#/components/parameters/qos_default'
+        - $ref: '#/components/parameters/ipv6enabled'
+        - $ref: '#/components/parameters/ipv6address'
+        - $ref: '#/components/parameters/ipv6prefixlen'
+        - $ref: '#/components/parameters/ipv6dhcp'
+        - $ref: '#/components/parameters/ipv6addresstype'
+        - $ref: '#/components/parameters/ipv6acceptrouters'
       responses:
-        200:
+        '200':
           description: Returns the parameters set in the request.
           content:
             text/plain:
@@ -659,7 +714,28 @@ paths:
                   - $ref: '#/components/schemas/irpos_chan1'
                   - $ref: '#/components/schemas/irpos_chan2'
                   - $ref: '#/components/schemas/snapstream'
-        
+                  - $ref: '#/components/schemas/sd_codec'
+                  - $ref: '#/components/schemas/sd_fps'
+                  - $ref: '#/components/schemas/sd_recording'
+                  - $ref: '#/components/schemas/sd_networkfail'
+                  - $ref: '#/components/schemas/sd_motionalarm'
+                  - $ref: '#/components/schemas/sd_ioalarm'
+                  - $ref: '#/components/schemas/sd_stampspan'
+                  - $ref: '#/components/schemas/sd_playbackstamp'
+                  - $ref: '#/components/schemas/sd_imgleft'
+                  - $ref: '#/components/schemas/sd_imgright'
+                  - $ref: '#/components/schemas/sd_imgtop'
+                  - $ref: '#/components/schemas/sd_imgbottom'
+                  - $ref: '#/components/schemas/sd_imgres'
+                  - $ref: '#/components/schemas/qos_enabled'
+                  - $ref: '#/components/schemas/qos_video'
+                  - $ref: '#/components/schemas/qos_default'
+                  - $ref: '#/components/schemas/ipv6enabled'
+                  - $ref: '#/components/schemas/ipv6address'
+                  - $ref: '#/components/schemas/ipv6prefixlen'
+                  - $ref: '#/components/schemas/ipv6dhcp'
+                  - $ref: '#/components/schemas/ipv6addresstype'
+                  - $ref: '#/components/schemas/ipv6acceptrouters'
   /g711:
     post:
       tags:
@@ -667,18 +743,1419 @@ paths:
       summary: Transmit Audio to Line Out
       description: Transmits continuous G.711 Audio to Arecont Vision cameras.
       responses:
-        200:
+        '200':
           description: Returns an audio stream.
           content:
             text/plain:
               schema:
                 type: string
-        
 components:
   schemas:
-    #- $ref: '#/components/parameters/scaling'
-    #- $ref: '#/components/parameters/scaling_size'
-    # - sd stuff
+    ipv6dhcp:
+      name: ipv6dhcp
+      in: query
+      description: |
+        Enable/disable DHCP for IPv6.
+      schema:
+        type: string
+        enum:
+          - 'on'
+          - 'off'
+    ipv6addresstype:
+      name: ipv6addresstype
+      in: query
+      description: |
+        IPv6 address type. Use `manual` to override a DHCP-set address.
+      schema:
+        type: string
+        enum:
+          - dhcp
+          - manual
+    ipv6acceptrouters:
+      name: ipv6acceptrouters
+      in: query
+      description: |
+        IPv6 accept routers setting.
+      schema:
+        type: boolean
+    ipv6enabled:
+      name: ipv6enabled
+      in: query
+      description: |
+        Enable/disable IPv6.
+      schema:
+        type: boolean
+    ipv6address:
+      name: ipv6address
+      in: query
+      description: |
+        The IPv6 address for the camera.
+      schema:
+        type: string
+        format: ipv6
+    ipv6prefixlen:
+      name: ipv6prefixlen
+      in: query
+      description: |
+        The IPv6 prefix.
+      schema:
+        type: string
+    scaling:
+      name: scaling
+      in: query
+      description: Enable or disable down-scaling.
+      schema:
+        type: string
+        enum:
+          - 'on'
+          - 'off'
+    scaling_size:
+      name: scaling
+      in: query
+      description: 'Set scaling size as `width, height`. Width ranges from 128 to 1280; height ranges from 96 to 720.'
+      schema:
+        type: string
+    qos_enabled:
+      name: qos_enabled
+      in: query
+      description: |
+        Arecont Vision cameras support RFC 2474 “Definition of the Differentiated services field (DS field) in the IPv4 and IPv6 headers”, which is widely adopted by router manufacturers to implement quality of service (QoS) mechanism. 
+
+        Enable or disable quality of service (QOS).
+      schema:
+        type: integer
+        minimum: 0
+        maximum: 1
+    qos_video:
+      name: qos_video
+      in: query
+      description: |
+        In Arecont Vision cameras, Per-Hop Behavior (PHB) type Assured Forwarding (AF) is the default PHB for video streaming over RTP. The recommended default Differentiated Services Code Point (DSCP) of AF is 34, which means low drop.
+      schema:
+        type: integer
+        minimum: 0
+        maximum: 63
+    qos_default:
+      name: qos_default
+      in: query
+      description: |
+        In Arecont Vision cameras, Per-Hop Behavior (PHB) type Assured Forwarding (AF) is the default PHB for video streaming over RTP. The recommended default Differentiated Services Code Point (DSCP) of AF is 34, which means low drop. All other traffic uses default PHB with DSCP value 0.
+      schema:
+        type: integer
+        minimum: 0
+        maximum: 63
+    sd_codec:
+      name: sd_codec
+      in: query
+      description: The codec used for video recorded to the camera's SD card.
+      schema:
+        type: string
+        enum:
+          - jpeg
+          - h264
+    sd_fps:
+      name: sd_fps
+      in: query
+      description: The framerate for video recorded to the camera's SD card.
+      schema:
+        type: integer
+        minimum: 0
+        maximum: 30
+    sd_playback_fps:
+      name: sd_playback_fps
+      in: query
+      description: 'Used to playback video from SD cards in 4k models. For 4K models, you do not “download” video from the SD card. Instead, you dynamically controll the playback framerate.'
+      schema:
+        type: integer
+        minimum: 0
+        maximum: 30
+    sd_recording:
+      name: sd_recording
+      in: query
+      description: Enables/disables continuous local recording.
+      schema:
+        type: string
+        enum:
+          - 'on'
+          - 'off'
+    sd_networkfail:
+      name: sd_networkfail
+      in: query
+      description: Enables/disables local recording on network failure events.
+      schema:
+        type: string
+        enum:
+          - 'on'
+          - 'off'
+    sd_motionalarm:
+      name: sd_motionalarm
+      in: query
+      description: Enables/disables local recording on motion events.
+      schema:
+        type: string
+        enum:
+          - 'on'
+          - 'off'
+    sd_ioalarm:
+      name: sd_ioalarm
+      in: query
+      description: Enables/disables local recording on I/O alarm events.
+      schema:
+        type: string
+        enum:
+          - 'on'
+          - 'off'
+    sd_stampspan:
+      name: sd_stampspan
+      in: query
+      description: Returns timestamps for recorded video.
+      schema:
+        type: boolean
+    sd_playbackstamp:
+      name: sd_playbackstamp
+      in: query
+      description: 'Playback video for the recorded timestamps - `beginningTime, endingTime`. If you don''t specify the `endTime` or set `0` for the end time, the camera will play until the end of recorded video.'
+      schema:
+        type: string
+        enum:
+          - 'on'
+          - 'off'
+    sd:
+      name: sd
+      in: query
+      description: |
+        Request images/video recorded on the SD card (local recording). `playback` plays back video in real time; `download` lets you stream video as fast as possible. Do not provide other parameters when reqeusting video recorded locally. 
+      schema:
+        type: string
+        enum:
+          - 'on'
+          - 'off'
+    sd_imgleft:
+      name: sd_imgleft
+      in: query
+      description: Select a region of video that you want ot record to the SD card. You should set this parameter before you turn on local recording.
+      schema:
+        type: integer
+    sd_imgright:
+      name: sd_imgright
+      in: query
+      description: Select a region of video that you want ot record to the SD card. You should set this parameter before you turn on local recording.
+      schema:
+        type: integer
+    sd_imgtop:
+      name: sd_imgtop
+      in: query
+      description: Select a region of video that you want ot record to the SD card. You should set this parameter before you turn on local recording.
+      schema:
+        type: integer
+    sd_imgbottom:
+      name: sd_imgbottom
+      in: query
+      description: Select a region of video that you want ot record to the SD card. You should set this parameter before you turn on local recording.
+      schema:
+        type: integer
+    sd_imgres:
+      name: sd_imgres
+      in: query
+      description: Determine whether to record SD images at full or half resolution.
+      schema:
+        type: string
+        enum:
+          - full
+          - half
+    irpos_chan1:
+      name: irpos_chan1
+      in: query
+      description: |
+        Controls IR intensity on LED board 1 of FLEX model cameras.
+      schema:
+        type: integer
+        minimum: 0
+        maximum: 32
+    irpos_chan2:
+      name: irpos_chan2
+      in: query
+      description: |
+        Controls IR intensity on LED board 2 of FLEX model cameras.
+      schema:
+        type: integer
+        minimum: 0
+        maximum: 32
+    kneepoint:
+      name: kneepoint
+      in: query
+      description: |
+        Custom mode setting
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+    analoggain:
+      name: analoggain
+      in: query
+      description: |
+        Custom mode setting
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+    maxkneegain:
+      name: maxkneegain
+      in: query
+      description: |
+        Custom mode setting
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+    maxexptime:
+      name: maxexptime
+      in: query
+      description: |
+        Custom mode setting
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+    maxdigitalgain:
+      name: maxdigitalgain
+      in: query
+      description: |
+        Custom mode setting
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+    day_binning:
+      name: day_binning
+      in: query
+      description: |
+        Enables or disables day binning mode for supported cameras.
+      schema:
+        type: string
+        enum:
+          - 'on'
+          - 'off'
+    night_binning:
+      name: night_binning
+      in: query
+      description: |
+        Enables or disables day binning mode for supported cameras.
+      schema:
+        type: string
+        enum:
+          - 'on'
+          - 'off'
+    daynight:
+      name: daynight
+      in: query
+      description: 'Sets day/night mode. Cameras default to `auto`, which sets day and night modes automatically. `dual` allows the client to pull both color and grayscale images simultaneously.'
+      schema:
+        type: string
+        enum:
+          - auto
+          - day
+          - night
+          - dual
+    upscaling:
+      name: upscaling
+      in: query
+      description: |
+        Scales monocrome images to the same size as color images. If upscaling is disabled, the ratio is 1.6 between color images and monochrome images. 
+      schema:
+        type: string
+        enum:
+          - 'on'
+          - 'off'
+    channelenable:
+      name: channelenable
+      in: query
+      description: The channels you want to enable.
+      schema:
+        type: string
+        minimum: 1
+        maximum: 15
+    rotate:
+      name: rotate
+      in: query
+      description: |
+        Sets the rotation of the image in 90 degree increments. 90 and 270 degree rotations are available in newer models; get features to determine whether or not your camera supports these values.
+      schema:
+        type: integer
+        multipleOf: 90
+        minimum: 0
+        maximum: 270
+    brightness:
+      name: brightness
+      in: query
+      description: Sets brightness for the camera or channel.
+      schema:
+        type: integer
+        minimum: -50
+        maximum: 50
+    sharpness:
+      name: sharpness
+      in: query
+      description: Sets sharpness for the camera or channel.
+      schema:
+        type: integer
+        minimum: 0
+        maximum: 4
+    saturation:
+      name: saturation
+      in: query
+      description: Sets color saturation for the camera or channel.
+      schema:
+        type: integer
+        minimum: 0
+        maximum: 6
+    blue:
+      name: blue
+      in: query
+      description: Sets blue balance for the camera or channel.
+      schema:
+        type: integer
+        minimum: -10
+        maximum: 10
+    red:
+      name: red
+      in: query
+      description: Sets red balance for the camera or channel.
+      schema:
+        type: integer
+        minimum: -10
+        maximum: 10
+    illum:
+      name: illum
+      in: query
+      description: Sets illumination for the camera or channel.
+      schema:
+        type: string
+        enum:
+          - auto
+          - indoor
+          - outdoor
+          - mlx
+    freq:
+      name: freq
+      in: query
+      description: 'Mains frequency in Hz, used for indoor lighting compensation.'
+      schema:
+        type: integer
+        minimum: 50
+        maximum: 60
+        multipleOf: 10
+    lowlight:
+      name: lowlight
+      in: query
+      description: Exposure (low light) mode.
+      schema:
+        type: string
+        enum:
+          - highspeed
+          - speed
+          - balance
+          - quality
+          - moonlight
+    shortexposures:
+      name: shortexposures
+      in: query
+      description: 'Shutter time in high-speed exposure mode, set in milliseconds.'
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 80
+    exposure:
+      name: exposure
+      in: query
+      description: Auto exposure mode
+      schema:
+        type: string
+        enum:
+          - auto
+          - 'on'
+          - 'off'
+    autoexp:
+      name: autoexp
+      in: query
+      description: Auto exposure mode
+      schema:
+        type: string
+        enum:
+          - 'on'
+          - 'off'
+    expwndleft:
+      name: expwndleft
+      in: query
+      description: The exposure window for the sensor.
+      schema:
+        type: integer
+        minimum: 0
+    expwndtop:
+      name: expwndtop
+      in: query
+      description: The exposure window for the sensor.
+      schema:
+        type: integer
+        minimum: 0
+    expwndwidth:
+      name: expwndwidth
+      in: query
+      description: The exposure window for the sensor.
+      schema:
+        type: integer
+        minimum: 0
+    expwndheight:
+      name: expwndheight
+      in: query
+      description: The exposure window for the sensor.
+      schema:
+        type: integer
+        minimum: 0
+    sensorleft:
+      name: sensorleft
+      in: query
+      description: 'Sensor cropping, from the left.'
+      schema:
+        type: integer
+        minimum: 0
+    sensortop:
+      name: sensortop
+      in: query
+      description: Sensor cropping from the top.
+      schema:
+        type: integer
+        minimum: 0
+    sensorwidth:
+      name: sensorwidth
+      in: query
+      description: Sensor cropping based on width. Both sides are equally cropped by half the value.
+      schema:
+        type: integer
+        minimum: 0
+    sensorheight:
+      name: sensorheight
+      in: query
+      description: 'Sensor cropping based on height. The top and bottom are equally cropped by half the value, centering the image.'
+      schema:
+        type: integer
+        minimum: 0
+    imgleft:
+      name: imgleft
+      in: query
+      description: 'Image setting, used as the implcit perameter in img.jpg image requests.'
+      schema:
+        type: integer
+        minimum: 0
+    imgtop:
+      name: imgtop
+      in: query
+      description: 'Image setting, used as the implcit perameter in img.jpg image requests.'
+      schema:
+        type: integer
+        minimum: 0
+    imgwidth:
+      name: imgwidth
+      in: query
+      description: 'Image setting, used as the implcit perameter in img.jpg image requests.'
+      schema:
+        type: integer
+        minimum: 0
+    imgheight:
+      name: imgheight
+      in: query
+      description: 'Image setting, used as the implcit perameter in img.jpg image requests.'
+      schema:
+        type: integer
+        minimum: 0
+    imgquality:
+      name: imgquality
+      in: query
+      description: 'Image setting, used as the implcit perameter list in img.jpg image requests.'
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 26
+    imgres:
+      name: imgres
+      in: query
+      description: 'Image setting, used as the implcit perameter list in img.jpg image requests.'
+      schema:
+        type: string
+        enum:
+          - full
+          - half
+    mac:
+      name: mac
+      in: query
+      description: Returns the MAC address of the camera.
+      schema:
+        type: string
+    model:
+      name: model
+      in: query
+      description: Returns the camera's model number. `fullname` returns the camera's base model number and feature leter; `releasename` returns the manufacturer model number and feature letter — the real model number.
+      schema:
+        type: string
+        enum:
+          - fullname
+          - releasename
+          - lpn
+          - internal
+    fwversion:
+      name: fwversion
+      in: query
+      description: Returns the camera's firmware version.
+      schema:
+        type: boolean
+    procversion:
+      name: procversion
+      in: query
+      description: Returns the image processor version.
+      schema:
+        type: boolean
+    netversion:
+      name: netversion
+      in: query
+      description: Returns the network processor version.
+      schema:
+        type: boolean
+    revision:
+      name: revision
+      in: query
+      description: Returns the PCB version.
+      schema:
+        type: boolean
+    params:
+      name: params
+      in: query
+      description: |
+        Perform basic camera actions
+
+        * save - commits current settings to flash memory
+        * factory - restore factory default settings
+        * reboot - restarts the camera
+      schema:
+        type: string
+        enum:
+          - save
+          - factory
+          - reboot
+    webserverport:
+      name: webserverport
+      in: query
+      description: The port for the camera's web server.
+      schema:
+        type: integer
+        minimum: 0
+        maximum: 65535
+    admin:
+      name: admin
+      in: query
+      description: Get or set the admin-level password.
+      schema:
+        oneOf:
+          - type: string
+            description: ASCII symbols representing your password.
+            minlength: 1
+            maxlength: 16
+            format: password
+          - type: string
+            description: The keyword to erase the current password.
+            enum:
+              - empty
+    viewer:
+      name: viewer
+      in: query
+      description: Get or set the viewer-level password.
+      schema:
+        oneOf:
+          - type: string
+            description: ASCII symbols representing your password.
+            minlength: 1
+            maxlength: 16
+            format: password
+          - type: string
+            description: The keyword to erase the current password.
+            enum:
+              - empty
+    maxsensorwidth:
+      name: maxsensorwidth
+      in: query
+      description: Get the maximum sensor width.
+      schema:
+        type: integer
+    maxsensorheight:
+      name: maxsensorheight
+      in: query
+      description: Get the maximum sensor height.
+      schema:
+        type: integer
+    mdmode:
+      name: mdmode
+      in: query
+      description: Get or set motion alarm settings
+      schema:
+        type: string
+        enum:
+          - 'on'
+          - 'off'
+    motiondetect:
+      name: motiondetect
+      in: query
+      description: Get or set motion detection settings
+      schema:
+        type: string
+        enum:
+          - 'on'
+          - 'off'
+    mdtotalzones:
+      name: mdtotalzones
+      in: query
+      description: Set regular (64) or extended motion detection mode (1024). 4k cameras support motion detection in extended mode either.
+      schema:
+        type: integer
+    auxin:
+      name: auxin
+      in: query
+      description: Get auxin.
+      schema:
+        type: boolean
+    auxout:
+      name: auxout
+      in: query
+      description: Get or set auxiliary audio out.
+      schema:
+        type: string
+        enum:
+          - 'on'
+          - 'off'
+    cropping:
+      name: cropping
+      in: query
+      description: |
+        Get or set flexible cropping.
+      schema:
+        type: string
+        enum:
+          - 'on'
+          - 'off'
+    1080p_mode:
+      name: 1080p_mode
+      in: query
+      description: |
+        Get or set 1080p mode — used in 10xx5 models only.
+      schema:
+        type: string
+        enum:
+          - 'on'
+          - 'off'
+    pmask:
+      name: pmask
+      in: query
+      description: |
+        Get or set the privacy mask. Use `pmask<direction>` to set the privacy mask block.
+      schema:
+        type: string
+        enum:
+          - 'on'
+          - 'off'
+    pmaskblock:
+      name: pmaskblock
+      in: query
+      description: |
+        Set the privacy mask block.
+      schema:
+        type: string
+        enum:
+          - 'on'
+          - 'off'
+    focus:
+      name: focus
+      in: query
+      description: |
+        Get or set focus moving steps. After setting focus/zoom, the new focus becomes valid after the next frame.
+      schema:
+        oneOf:
+          - type: string
+            enum:
+              - fullrange
+              - shortrange
+              - status
+          - type: integer
+            minimum: -20
+            maximum: 20
+    focusleft:
+      name: focusleft
+      in: query
+      schema:
+        type: integer
+        minimum: 0
+    focustop:
+      name: focustop
+      in: query
+      schema:
+        type: integer
+        minimum: 0
+    focusright:
+      name: focusright
+      in: query
+      schema:
+        type: integer
+        minimum: 0
+    focusbottom:
+      name: focusbottom
+      in: query
+      schema:
+        type: integer
+        minimum: 0
+    zoom:
+      name: zoom
+      in: query
+      description: |
+        Set zoom moving steps.
+      schema:
+        oneOf:
+          - type: string
+            enum:
+              - reset
+            description: Resets zoom level.
+          - type: integer
+            minimum: -20
+            maximum: 20
+    focuswindow:
+      name: focuswindow
+      in: query
+      description: Get or set the four sides of the focus window.
+      schema:
+        type: array
+        description: 'When setting the focus window, provide the four values of the focus window as comma-separated integers from 0 to the maximum sensor value — width, height, width, height.'
+        minItems: 4
+        maxItems: 4
+        items:
+          type: integer
+    af_dn:
+      name: af_dn
+      in: query
+      description: |
+        Get or set autofocus after enabling the day-night switch.
+      schema:
+        type: string
+        enum:
+          - 'on'
+          - 'off'
+    af_zoom:
+      name: af_zoom
+      in: query
+      description: Get or set autofocus after zoom.
+      schema:
+        type: string
+        enum:
+          - 'on'
+          - 'off'
+    casino_mode:
+      name: casino_mode
+      in: query
+      description: Get or set casino mode (1080p models only)
+      schema:
+        type: string
+        enum:
+          - 'on'
+          - 'off'
+    netopt:
+      name: netopt
+      in: query
+      description: |
+        Get or set network related settings. Integers correspond to the bits you want to enable or disable.
+
+
+        bit 0 = DHCP IP assignment; bit 1 = BOOTP IP assignment; bit 2 = RARP IP assignment; bit 3 = IP lock; bit 4 = NTP time requester; bit 5 = PSIA discovery multicast server; bit 6 = RTP multicast server; bit 7 = MTU enable/disable; bit 8 = PSIA discovery zeroconfig server; bit 9 = IPv6 stack enable; bit 10 = DHCPv6 enable
+      schema:
+        type: integer
+        maximum: 10
+        minimum: 0
+    streamip:
+      name: streamip
+      in: query
+      description: Get or set the multicast IP address.
+      schema:
+        type: string
+        format: ipv4
+        pattern: '^([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])$'
+    rtpport:
+      name: rtpport
+      in: query
+      description: Get or set the multicast port.
+      schema:
+        type: integer
+        minimum: 0
+        maximum: 65535
+    sapip:
+      name: sapip
+      in: query
+      description: Get or set the multicast SAP IP address.
+      schema:
+        type: string
+        format: ipv4
+        pattern: '^([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])$'
+    multicast_rec:
+      name: multicast_rec
+      in: query
+      description: Get or set the multicast reception setting.
+      schema:
+        type: string
+        enum:
+          - 'on'
+          - 'off'
+    en_multicast:
+      name: en_multicast
+      in: query
+      description: |
+        Enable multicast announcement.
+
+        1. To pass ONVIF conformance test, firmware does not announce ONVIF multicast by default. You need to use this HTTP command to enable multicast announcement manually, or your VMS may fail to establish multicast streaming.
+        2. This setting enables or disables support for incoming multicast traffic. Disabling this feature will not affect the camera's ability to provide multicast video. 
+        3. For multi-sensor cameras, HTTP commands streamip, sapip and rtpport are channel specific and not global. Currently SurroundVideo series is the only multi-sensor camera that supports these multicast HTTP commands, starting from firmware 65192.14.
+      schema:
+        type: integer
+        minimum: 0
+        maximum: 1
+    res:
+      name: res
+      in: query
+      description: The resolution MJPEGs you want to return
+      required: false
+      schema:
+        type: string
+        enum:
+          - full
+          - half
+    x0:
+      name: x0
+      in: query
+      description: |
+        Left coordinate, used to offset the image. This value should be divisible by 32 if `res=full` or 64 if `res=half`.
+      required: false
+      schema:
+        type: integer
+        format: int32
+    y0:
+      name: y0
+      in: query
+      description: |
+        Top coordinate, used to offset the image. This value should be divisible by 32 if `res=full` or 64 if `res=half`.
+      schema:
+        type: integer
+        format: int32
+    x1:
+      name: x1
+      in: query
+      description: |
+        Right coordinate, used to offset the image. This value should be divisible by 32 if `res=full` or 64 if `res=half`.
+      required: false
+      schema:
+        type: integer
+        format: int32
+    y1:
+      name: y1
+      in: query
+      description: |
+        Bottom coordinate, used to offset the image. This value should be divisible by 32 if `res=full` or 64 if `res=half`.
+      schema:
+        type: integer
+    qp:
+      name: qp
+      in: query
+      description: |
+        The quantization parameter for the H.264 encoder. Sets the target qp. Lower qp indicates a higher quality image. This paramaeter is ignored if your request includes the bitrate parameter. 
+      schema:
+        type: string
+        minimum: 16
+        maximum: 36
+    qp_max:
+      name: qp_max
+      in: query
+      description: |
+        Get or set the maximum allowed QP value — i.e. the lowest allowable quality.
+      schema:
+        type: string
+        minimum: 16
+        maximum: 36
+    ratelimit_mode:
+      name: ratelimit_mode
+      in: query
+      description: |
+        Get or set variable bitrate limit mode.
+      schema:
+        type: boolean
+    ratelimit:
+      name: ratelimit
+      in: query
+      description: |
+        Get or set a variable bitrate limit.
+      schema:
+        type: string
+        minimum: 0
+        maximum: 65535
+    quality:
+      name: quality
+      in: query
+      description: The compression quality of the image
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 21
+    doublescan:
+      name: doublescan
+      in: query
+      description: Effectively a boolean that determines whether or not the camera should delay image output until a new image is available.
+      schema:
+        type: integer
+        minimum: 0
+        maximum: 1
+    ssn:
+      name: ssn
+      in: query
+      description: |
+        Stream identifier — distinguishes multiple streams from one another. Use a unique ssn for each stream with a unique image size, quality and/or frame rate. Each camera supports up to eight simultaneous non-identical streams. Each client must have a unique (ip:ssn)
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 65535
+    iframe:
+      name: iframe
+      in: query
+      description: |
+        Effectively a boolean (0 or 1). Set to 1 will force the camera to return an Intra frame (I-frame) with a corresponding SPS and PPS as an IDR slice, so that the stream is decodable from this point. When opening a new stream (as when changing the image size and/or frame rate) the I-frame is sent automatically regardless of the input value of `iframe`. To reduce the stream size, reduce the frequency of `iframe = 1` in requests. You can set the P-frames for any of the streams sent by the camera is set using
+        one of the following HTTP commands :
+        http://camera_ip/setreg?page=3&reg=21&val=(0..100)
+
+        http://camera_ip/set?keyframeinterval=(0..100)
+        When the on-camera counter of P-frames fills up, the camera will return an I-frame even if iframe in the request is set to 0. To find out whether an I-frame was received, check the HTTP Content Type.
+      schema:
+        type: integer
+        maximum: 1
+        minimum: 0
+    bitrate:
+      name: bitrate
+      in: query
+      description: |
+        Sets a constant bitrate in kilobits per second. If this parameter is present in the request, the QP parameter is ignored, and the camera adjusts quantization parameters automatically to maintain the specified bitrate.
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 65535
+    intra_period:
+      name: intra_period
+      in: query
+      description: |
+        Valid when requesting a non-zero bitrate and periodically requesting `iframe=1`. Specifies the intra-frame period during which you are sending requests with `iframe=1`. If you do not specify `intra_period`, bitrate control will not function correctly unless the actual period of sending iframe=1 requests is the same as the number of P-frames specified in register 3:21 of the camera via one of the commands described above. If you do not request `iframe=1` at all, then the `intra_period` parameter is not required and bitrate control will rely on the number of P-frames set in register 3:21. 
+      schema:
+        type: integer
+        minimum: 0
+        maximum: 255
+    fps:
+      name: fps
+      in: query
+      description: Get or set the camera framerate. values over the camera's famerate will return the camera's maximum framerate (model dependent).
+      schema:
+        type: integer
+        minimum: 0
+        maximum: 30
+    channel:
+      name: channel
+      in: query
+      description: |
+        If `upscaling=on`, use the channel parameter to retrieve color or monochrome images from the camera.
+      schema:
+        type: string
+        enum:
+          - color
+          - mono
+    keyframe:
+      name: keyframe
+      in: query
+      description: |
+        Get or set key frame setting. Yields an I-frame on the next available frame.
+      schema:
+        type: boolean
+    keyframeinterval:
+      name: keyframeinterval
+      in: query
+      description: |
+        Get or set the key frame interval.
+
+        * For non-4K models the maximum limit is 100
+        * The numerical value in “set?keyframeinterval=(0…65535)” represents the P-frame count between two consecutive key frames (I-frames)
+      schema:
+        type: integer
+        minimum: 0
+        maximum: 200
+        default: 50
+    rtspport:
+      name: rtspport
+      in: query
+      description: |
+        Get or set the RTSP port.
+      schema:
+        type: integer
+        minimum: 0
+        maximum: 65535
+        default: 554
+    spacialfilter:
+      name: spacialfilter
+      in: query
+      description: |
+        Get or set the low-light noise filter.
+      schema:
+        type: integer
+        minimum: 0
+        maximum: 100
+    name:
+      name: name
+      in: query
+      description: |
+        Get or set the camera name.
+      schema:
+        type: string
+        minLength: 0
+        maxLength: 32
+    mtu:
+      name: mtu
+      in: query
+      description: |
+        Get or set the MTU size.
+      schema:
+        type: integer
+        minimum: 512
+        maximum: 1500
+    ip:
+      name: ip
+      in: query
+      description: |
+        Get or set the camera's IP address.
+      schema:
+        type: string
+        pattern: '^([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])$'
+    subnetmask:
+      name: subnetmask
+      in: query
+      description: |
+        Get or set the camera's subnet mask.
+      schema:
+        type: string
+        pattern: '^([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])$'
+    gateway:
+      name: gateway
+      in: query
+      description: |
+        Get or set the camera's default gateway.
+      schema:
+        type: string
+        pattern: '^([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])$'
+    eth_negotiation:
+      name: eth_negotiation
+      in: query
+      description: |
+        When set to auto, auto negotiation is enabled. Connected devices will first share their transmission capabilities, such as speed and duplex mode, and then choose the highest performance transmission mode they both support.
+
+        When set to fixed, the camera uses a transmission speed of 100Mb and full duplex mode.
+      schema:
+        type: string
+        enum:
+          - auto
+          - fixed
+    features:
+      name: features
+      in: query
+      description: |
+        Returns an integer for enabled features. Integers that are not returned are not enabled.
+      schema:
+        type: integer
+    audioinput:
+      name: audioinput
+      in: query
+      description: |
+        The source of audio input.
+      schema:
+        type: string
+        enum:
+          - mic
+          - linein
+    linein_volume:
+      name: linein_volume
+      in: query
+      description: |
+        Volume of line-in audio.
+      schema:
+        type: integer
+        minimum: 0
+        maximum: 45
+    mic_boost:
+      name: mic_boost
+      in: query
+      description: |
+        Volume of microphone-in audio.
+      schema:
+        type: integer
+        minimum: 0
+        maximum: 2
+    piris:
+      name: piris
+      in: query
+      description: |
+        Enable/disable P-iris
+      schema:
+        type: string
+        enum:
+          - 'on'
+          - 'off'
+    pirispos:
+      name: pirispos
+      in: query
+      description: |
+        The position P-iris closes to
+      schema:
+        type: integer
+        minimum: 0
+        maximum: 255
+    ir:
+      name: ir
+      in: query
+      description: |
+        Infrafred light control. `on` enables IR in night mode; `alwayson` enables IR always.
+      schema:
+        type: string
+        enum:
+          - 'on'
+          - alwayson
+          - 'off'
+    make:
+      name: make
+      in: query
+      description: |
+        Get the make of the camera.
+      schema:
+        type: string
+    white_balance:
+      name: white_balance
+      in: query
+      description: |
+        White balance control.
+      schema:
+        type: string
+        enum:
+          - 'on'
+          - 'off'
+    wbwndctrl:
+      name: wbwndctrl
+      in: query
+      description: |
+        White balance window control.
+      schema:
+        type: string
+        enum:
+          - 'on'
+          - 'off'
+    wbwndleft:
+      name: wbwndleft
+      in: query
+      description: |
+        White balance window left start value. Maximum values depend on your sensor size.
+      schema:
+        type: integer
+        minimum: 0
+    wbwndtop:
+      name: wbwndtop
+      in: query
+      description: |
+        White balance window top start value. Maximum values depend on your sensor size.
+      schema:
+        type: integer
+        minimum: 0
+    wbwndwidth:
+      name: wbwndwidth
+      in: query
+      description: |
+        White balance window width, beginning from the `wbwndleft` value. Maximum values depend on your sensor size.
+      schema:
+        type: integer
+        minimum: 0
+    wbwndheight:
+      name: wbwndheight
+      in: query
+      description: |
+        White balance window height, beginning from the `wbwndtop` value. Maximum values depend on your sensor size.
+      schema:
+        type: integer
+        minimum: 0
+    ntpserver_ip:
+      name: ntpserver_ip
+      in: query
+      description: |
+        NTP server address.
+      schema:
+        type: string
+        pattern: '^([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])$'
+    enclosure:
+      name: enclosure
+      in: query
+      description: |
+        Returns the camera's model name. Provide `code` to return the model type number.
+      schema:
+        type: string
+        enum:
+          - code
+    gamma:
+      name: gamma
+      in: query
+      description: |
+        Gamma for single sensor and Surroundvideo1 cameras.
+      schema:
+        type: integer
+        minimum: 0
+        maximum: 100
+    gamma2:
+      name: gamma2
+      in: query
+      description: |
+        Gamma for the second sensor in dual sensor cameras.
+      schema:
+        type: integer
+        minimum: 0
+        maximum: 100
+    bandwidthsaving:
+      name: bandwidthsaving
+      in: query
+      description: |
+        Bandwidth saving mode settings.
+      schema:
+        type: string
+        enum:
+          - 'on'
+          - 'off'
+    lowpower:
+      name: lowpower
+      in: query
+      description: |
+        Low power mode settings.
+      schema:
+        type: string
+        enum:
+          - 'on'
+          - 'off'
+    motion_compensation:
+      name: motion_compensation
+      in: query
+      description: |
+        Motion compensation settings.
+      schema:
+        type: string
+        enum:
+          - 'on'
+          - 'off'
+    adjustable_ir:
+      name: adjustable_ir
+      in: query
+      description: |
+        Adjustable IR light settings.
+      schema:
+        type: string
+        enum:
+          - adaptive
+          - preset
+          - disabled
+    irwidepos:
+      name: irwidepos
+      in: query
+      description: |
+        The adjustable intensity of wide IR lights.
+      schema:
+        type: integer
+        minimum: 0
+        maximum: 7
+    irtelepos:
+      name: irtelpos
+      in: query
+      description: |
+        The adjustable intensity of tele IR lights.
+      schema:
+        type: integer
+        minimum: 0
+        maximum: 7
+    snapstream:
+      name: snapstream
+      in: query
+      description: |
+        Snapstream on/off setting.
+      schema:
+        type: string
+        enum:
+          - 'on'
+          - 'off'
+    sensorcount:
+      name: sensorcount
+      in: query
+      description: |
+        Returns the sensor count. Use the sensor count to determine the channels you want to get or set when 
+      schema:
+        type: integer
+  parameters:
+    ipv6dhcp:
+      name: ipv6dhcp
+      in: query
+      description: |
+        Enable/disable DHCP for IPv6.
+      schema:
+        type: string
+        enum:
+          - 'on'
+          - 'off'
+      allowEmptyValue: true
+    ipv6addresstype:
+      name: ipv6addresstype
+      in: query
+      description: |
+        IPv6 address type. Use `manual` to override a DHCP-set address.
+      schema:
+        type: string
+        enum:
+          - dhcp
+          - manual
+      allowEmptyValue: true
+    ipv6acceptrouters:
+      name: ipv6acceptrouters
+      in: query
+      description: |
+        IPv6 accept routers setting.
+      schema:
+        type: boolean
+      allowEmptyValue: true
+    ipv6enabled:
+      name: ipv6enabled
+      in: query
+      description: |
+        Enable/disable IPv6.
+      schema:
+        type: boolean
+      allowEmptyValue: true
+    ipv6address:
+      name: ipv6address
+      in: query
+      description: |
+        The IPv6 address for the camera.
+      schema:
+        type: string
+        format: ipv6
+      allowEmptyValue: true
+    ipv6prefixlen:
+      name: ipv6prefixlen
+      in: query
+      description: |
+        The IPv6 prefix.
+      schema:
+        type: string
+      allowEmptyValue: true
     qos_enabled:
       name: qos_enabled
       in: query
@@ -717,7 +2194,9 @@ components:
       description: The codec used for video recorded to the camera's SD card.
       schema:
         type: string
-        enum: [jpeg, h264]
+        enum:
+          - jpeg
+          - h264
       allowEmptyValue: true
     sd_fps:
       name: sd_fps
@@ -731,7 +2210,7 @@ components:
     sd_playback_fps:
       name: sd_playback_fps
       in: query
-      description: Used to playback video from SD cards in 4k models. For 4K models, you do not “download” video from the SD card. Instead, you dynamically controll the playback framerate.
+      description: 'Used to playback video from SD cards in 4k models. For 4K models, you do not “download” video from the SD card. Instead, you dynamically controll the playback framerate.'
       schema:
         type: integer
         minimum: 0
@@ -743,7 +2222,9 @@ components:
       description: Enables/disables continuous local recording.
       schema:
         type: string
-        enum: [on, off]
+        enum:
+          - 'on'
+          - 'off'
       allowEmptyValue: true
     sd_networkfail:
       name: sd_networkfail
@@ -751,7 +2232,9 @@ components:
       description: Enables/disables local recording on network failure events.
       schema:
         type: string
-        enum: [on, off]
+        enum:
+          - 'on'
+          - 'off'
       allowEmptyValue: true
     sd_motionalarm:
       name: sd_motionalarm
@@ -759,7 +2242,9 @@ components:
       description: Enables/disables local recording on motion events.
       schema:
         type: string
-        enum: [on, off]
+        enum:
+          - 'on'
+          - 'off'
       allowEmptyValue: true
     sd_ioalarm:
       name: sd_ioalarm
@@ -767,7 +2252,9 @@ components:
       description: Enables/disables local recording on I/O alarm events.
       schema:
         type: string
-        enum: [on, off]
+        enum:
+          - 'on'
+          - 'off'
       allowEmptyValue: true
     sd_stampspan:
       name: sd_stampspan
@@ -779,10 +2266,12 @@ components:
     sd_playbackstamp:
       name: sd_playbackstamp
       in: query
-      description: Playback video for the recorded timestamps - `beginningTime, endingTime`. If you don't specify the `endTime` or set `0` for the end time, the camera will play until the end of recorded video.
+      description: 'Playback video for the recorded timestamps - `beginningTime, endingTime`. If you don''t specify the `endTime` or set `0` for the end time, the camera will play until the end of recorded video.'
       schema:
         type: string
-        enum: [on, off]
+        enum:
+          - 'on'
+          - 'off'
       allowEmptyValue: true
     sd:
       name: sd
@@ -791,7 +2280,9 @@ components:
         Use to request images/video recorded on the SD card. `playback` plays back video in real time; `download` lets you stream video as fast as possible.         
       schema:
         type: string
-        enum: [on, off]
+        enum:
+          - 'on'
+          - 'off'
       allowEmptyValue: true
     sd_imgleft:
       name: sd_imgleft
@@ -827,1142 +2318,10 @@ components:
       description: Determine whether to record SD images at full or half resolution.
       schema:
         type: string
-        enum: [full, half]
+        enum:
+          - full
+          - half
       allowEmptyValue: true
-    irpos_chan1:
-      name: irpos_chan1
-      in: query
-      description: |
-        Controls IR intensity on LED board 1 of FLEX model cameras.
-      schema:
-        type: integer
-        minimum: 0
-        maximum: 32
-    irpos_chan2:
-      name: irpos_chan2
-      in: query
-      description: |
-        Controls IR intensity on LED board 2 of FLEX model cameras.
-      schema:
-        type: integer
-        minimum: 0
-        maximum: 32
-    kneepoint:
-      name: kneepoint
-      in: query
-      description: |
-        Custom mode setting
-      schema:
-        type: integer
-        minimum: 1
-        maximum: 100
-      
-    analoggain:
-      name: analoggain
-      in: query
-      description: |
-        Custom mode setting
-      schema:
-        type: integer
-        minimum: 1
-        maximum: 100
-      
-    maxkneegain:
-      name: maxkneegain
-      in: query
-      description: |
-        Custom mode setting
-      schema:
-        type: integer
-        minimum: 1
-        maximum: 100
-      
-    maxexptime:
-      name: maxexptime
-      in: query
-      description: |
-        Custom mode setting
-      schema:
-        type: integer
-        minimum: 1
-        maximum: 100
-      
-    maxdigitalgain:
-      name: maxdigitalgain
-      in: query
-      description: |
-        Custom mode setting
-      schema:
-        type: integer
-        minimum: 1
-        maximum: 100
-      
-    day_binning:
-      name: day_binning
-      in: query
-      description: |
-        Enables or disables day binning mode for supported cameras.
-      schema:
-        type: string
-        enum: [on, off]
-      
-    night_binning:
-      name: night_binning
-      in: query
-      description: |
-        Enables or disables day binning mode for supported cameras.
-      schema:
-        type: string
-        enum: [on, off]
-      
-    daynight:
-      name: daynight
-      in: query
-      description: Sets day/night mode. Cameras default to `auto`, which sets day and night modes automatically. `dual` allows the client to pull both color and grayscale images simultaneously.
-      schema:
-        type: string
-        enum: [auto, day, night, dual]
-    upscaling:
-      name: upscaling
-      in: query
-      description: |
-        Scales monocrome images to the same size as color images. If upscaling is disabled, the ratio is 1.6 between color images and monochrome images. 
-      schema:
-        type: string
-        enum: [on, off]
-
-    channelenable:
-      name: channelenable
-      in: query
-      description: The channels you want to enable.
-      schema:
-        type: string
-        minimum: 1
-        maximum: 15
-    rotate:
-      name: rotate
-      in: query
-      description: |
-        Sets the rotation of the image in 90 degree increments. 90 and 270 degree rotations are available in newer models; get features to determine whether or not your camera supports these values.
-      schema:
-        type: integer
-        multipleOf: 90
-        minimum: 0
-        maximum: 270
-    brightness:
-      name: brightness
-      in: query
-      description: Sets brightness for the camera or channel.
-      schema:
-        type: integer
-        minimum: -50
-        maximum: 50
-    sharpness:
-      name: sharpness
-      in: query
-      description: Sets sharpness for the camera or channel.
-      schema:
-        type: integer
-        minimum: 0
-        maximum: 4
-    saturation:
-      name: saturation
-      in: query
-      description: Sets color saturation for the camera or channel.
-      schema:
-        type: integer
-        minimum: 0
-        maximum: 6
-    blue:
-      name: blue
-      in: query
-      description: Sets blue balance for the camera or channel.
-      schema:
-        type: integer
-        minimum: -10
-        maximum: 10
-    red:
-      name: red
-      in: query
-      description: Sets red balance for the camera or channel.
-      schema:
-        type: integer
-        minimum: -10
-        maximum: 10
-    illum:
-      name: illum
-      in: query
-      description: Sets illumination for the camera or channel.
-      schema:
-        type: string
-        enum: [auto, indoor, outdoor, mlx]
-    freq:
-      name: freq
-      in: query
-      description: Mains frequency in Hz, used for indoor lighting compensation.
-      schema:
-        type: integer
-        minimum: 50
-        maximum: 60
-        multipleOf: 10
-    lowlight:
-      name: lowlight
-      in: query
-      description: Exposure (low light) mode.
-      schema:
-        type: string
-        enum: [highspeed, speed, balance, quality, moonlight]
-    shortexposures:
-      name: shortexposures
-      in: query
-      description: Shutter time in high-speed exposure mode, set in milliseconds.
-      schema:
-        type: integer
-        minimum: 1
-        maximum: 80
-    exposure:
-      name: exposure
-      in: query
-      description: Auto exposure mode
-      schema:
-        type: string
-        enum: [auto, on, off]
-    autoexp:
-      name: autoexp
-      in: query
-      description: Auto exposure mode
-      schema:
-        type: string
-        enum: [on, off]
-    expwndleft:
-      name: expwndleft
-      in: query
-      description: The exposure window for the sensor.
-      schema:
-        type: integer
-        minimum: 0
-    expwndtop:
-      name: expwndtop
-      in: query
-      description: The exposure window for the sensor.
-      schema:
-        type: integer
-        minimum: 0
-    expwndwidth:
-      name: expwndwidth
-      in: query
-      description: The exposure window for the sensor.
-      schema:
-        type: integer
-        minimum: 0
-    expwndheight:
-      name: expwndheight
-      in: query
-      description: The exposure window for the sensor.
-      schema:
-        type: integer
-        minimum: 0
-    sensorleft:
-      name: sensorleft
-      in: query
-      description: Sensor cropping, from the left.
-      schema:
-        type: integer
-        minimum: 0
-    sensortop:
-      name: sensortop
-      in: query
-      description: Sensor cropping from the top.
-      schema:
-        type: integer
-        minimum: 0
-    sensorwidth:
-      name: sensorwidth
-      in: query
-      description: Sensor cropping based on width. Both sides are equally cropped by half the value.
-      schema:
-        type: integer
-        minimum: 0
-    sensorheight:
-      name: sensorheight
-      in: query
-      description: Sensor cropping based on height. The top and bottom are equally cropped by half the value, centering the image.
-      schema:
-        type: integer
-        minimum: 0
-    imgleft:
-      name: imgleft
-      in: query
-      description: Image setting, used as the implcit perameter in img.jpg image requests.
-      schema:
-        type: integer
-        minimum: 0
-    imgtop:
-      name: imgtop
-      in: query
-      description: Image setting, used as the implcit perameter in img.jpg image requests.
-      schema:
-        type: integer
-        minimum: 0
-    imgwidth:
-      name: imgwidth
-      in: query
-      description: Image setting, used as the implcit perameter in img.jpg image requests.
-      schema:
-        type: integer
-        minimum: 0
-    imgheight:
-      name: imgheight
-      in: query
-      description: Image setting, used as the implcit perameter in img.jpg image requests.
-      schema:
-        type: integer
-        minimum: 0
-    imgquality:
-      name: imgquality
-      in: query
-      description: Image setting, used as the implcit perameter list in img.jpg image requests.
-      schema:
-        type: integer
-        minimum: 1
-        maximum: 26
-    imgres:
-      name: imgres
-      in: query
-      description: Image setting, used as the implcit perameter list in img.jpg image requests.
-      schema:
-        type: string
-        enum: [full, half]
-    mac:
-      name: mac
-      in: query
-      description: Returns the MAC address of the camera.
-      schema:
-        type: string
-    model:
-      name: model
-      in: query
-      description: Returns the camera's model number. `fullname` returns the camera's base model number and feature leter; `releasename` returns the manufacturer model number and feature letter — the real model number.
-      schema:
-        type: string
-        enum: [fullname, releasename, lpn, internal]
-      
-    fwversion:
-      name: fwversion
-      in: query
-      description: Returns the camera's firmware version.
-      schema:
-        type: boolean
-      
-    procversion:
-      name: procversion
-      in: query
-      description: Returns the image processor version.
-      schema:
-        type: boolean
-      
-    netversion:
-      name: netversion
-      in: query
-      description: Returns the network processor version.
-      schema:
-        type: boolean
-      
-    revision:
-      name: revision
-      in: query
-      description: Returns the PCB version.
-      schema:
-        type: boolean
-      
-    params:
-      name: params
-      in: query
-      description: |
-        Perform basic camera actions
-
-        * save - commits current settings to flash memory
-        * factory - restore factory default settings
-        * reboot - restarts the camera
-      schema:
-        type: string
-        enum: [save, factory, reboot]
-    webserverport:
-      name: webserverport
-      in: query
-      description: The port for the camera's web server.
-      schema:
-        type: integer
-        minimum: 0
-        maximum: 65535
-      
-    admin:
-      name: admin
-      in: query
-      description: Get or set the admin-level password.
-      schema:
-        oneOf:
-          - type: string
-            description: ASCII symbols representing your password.
-            minlength: 1
-            maxlength: 16
-            format: password
-          - type: string
-            description: The keyword to erase the current password.
-            enum: [empty]
-      
-    viewer:
-      name: viewer
-      in: query
-      description: Get or set the viewer-level password.
-      schema:
-        oneOf:
-          - type: string
-            description: ASCII symbols representing your password.
-            minlength: 1
-            maxlength: 16
-            format: password
-          - type: string
-            description: The keyword to erase the current password.
-            enum: [empty]
-    maxsensorwidth:
-      name: maxsensorwidth
-      in: query
-      description: Get the maximum sensor width.
-      schema:
-        type: integer
-      
-    maxsensorheight:
-      name: maxsensorheight
-      in: query
-      description: Get the maximum sensor height.
-      schema:
-        type: integer
-      
-    mdmode:
-      name: mdmode
-      in: query
-      description: Get or set motion alarm settings
-      schema:
-        type: string
-        enum: [on, off]
-      
-    motiondetect:
-      name: motiondetect
-      in: query
-      description: Get or set motion detection settings
-      schema:
-        type: string
-        enum: [on, off]
-      
-    mdtotalzones:
-      name: mdtotalzones
-      in: query
-      description: Set regular (64) or extended motion detection mode (1024). 4k cameras support motion detection in extended mode either.
-      schema:
-        type: integer
-      
-    # add custom mode settings
-    # add info about motion detection zones
-    auxin:
-      name: auxin
-      in: query
-      description: Get auxin.
-      schema:
-        type: boolean
-      
-    auxout:
-      name: auxout
-      in: query
-      description: Get or set auxiliary audio out.
-      schema:
-        type: string
-        enum: [on, off]
-      
-    cropping:
-      name: cropping
-      in: query
-      description: | 
-        Get or set flexible cropping.
-      schema:
-        type: string
-        enum: [on, off]
-      
-    1080p_mode:
-      name: 1080p_mode
-      in: query
-      description: |
-        Get or set 1080p mode — used in 10xx5 models only.
-      schema:
-        type: string
-        enum: [on, off]
-      
-    pmask:
-      name: pmask
-      in: query
-      description: |
-        Get or set the privacy mask. Use `pmask<direction>` to set the privacy mask block.
-      schema:
-        type: string
-        enum: [on, off]
-      
-    pmaskblock:
-      name: pmaskblock
-      in: query
-      description: |
-        Set the privacy mask block.
-      schema:
-        type: string
-        enum: [on, off]
-      
-    # add pmask directions
-    focus:
-      name: focus
-      in: query
-      description: |
-        Get or set focus moving steps. After setting focus/zoom, the new focus becomes valid after the next frame.
-      schema:
-        oneOf:
-          - type: string
-            enum: [fullrange, shortrange, status]
-          - type: integer
-            minimum: -20
-            maximum: 20
-      
-    focusleft:
-      name: focusleft
-      in: query
-      schema:
-        type: integer
-        minimum: 0
-    focustop:
-      name: focustop
-      in: query
-      schema:
-        type: integer
-        minimum: 0
-    focusright:
-      name: focusright
-      in: query
-      schema:
-        type: integer
-        minimum: 0
-    focusbottom:
-      name: focusbottom
-      in: query
-      schema:
-        type: integer
-        minimum: 0
-          
-        
-    # get focus status?
-    zoom:
-      name: zoom
-      in: query
-      description: |
-        Set zoom moving steps.
-      schema:
-        oneOf:
-          - type: string
-            enum: [reset]
-            description: Resets zoom level.
-          - type: integer
-            minimum: -20
-            maximum: 20
-    focuswindow:
-      name: focuswindow
-      in: query
-      description: Get or set the four sides of the focus window.
-      schema:
-        type: array
-        description: When setting the focus window, provide the four values of the focus window as comma-separated integers from 0 to the maximum sensor value — width, height, width, height.
-        minItems: 4
-        maxItems: 4
-        items:
-          type: integer
-      
-    af_dn:
-      name: af_dn
-      in: query
-      description: |
-        Get or set autofocus after enabling the day-night switch.
-      schema:
-        type: string
-        enum: [on, off]
-      
-    af_zoom:
-      name: af_zoom
-      in: query
-      description: Get or set autofocus after zoom.
-      schema:
-        type: string
-        enum: [on, off]
-      
-    casino_mode:
-      name: casino_mode
-      in: query
-      description: Get or set casino mode (1080p models only)
-      schema:
-        type: string
-        enum: [on, off]
-      
-    netopt:
-      name: netopt
-      in: query
-      description: |
-        Get or set network related settings. Integers correspond to the bits you want to enable or disable.
-
-
-        bit 0 = DHCP IP assignment; bit 1 = BOOTP IP assignment; bit 2 = RARP IP assignment; bit 3 = IP lock; bit 4 = NTP time requester; bit 5 = PSIA discovery multicast server; bit 6 = RTP multicast server; bit 7 = MTU enable/disable; bit 8 = PSIA discovery zeroconfig server; bit 9 = IPv6 stack enable; bit 10 = DHCPv6 enable
-      schema:
-        type: integer
-        maximum: 10
-        minimum: 0
-      
-    streamip:
-      name: streamip
-      in: query
-      description: Get or set the multicast IP address.
-      schema:
-        type: string
-        format: ipv4
-        pattern: ^([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])$
-      
-    rtpport:
-      name: rtpport
-      in: query
-      description: Get or set the multicast port.
-      schema:
-        type: integer
-        minimum: 0
-        maximum: 65535
-      
-    sapip:
-      name: sapip
-      in: query
-      description: Get or set the multicast SAP IP address.
-      schema:
-        type: string
-        format: ipv4
-        pattern: ^([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])$
-      
-    multicast_rec:
-      name: multicast_rec
-      in: query
-      description: Get or set the multicast reception setting.
-      schema:
-        type: string
-        enum: [on, off]
-      
-    en_multicast:
-      name: en_multicast
-      in: query
-      description: |
-        Enable multicast announcement.
-
-        1. To pass ONVIF conformance test, firmware does not announce ONVIF multicast by default. You need to use this HTTP command to enable multicast announcement manually, or your VMS may fail to establish multicast streaming.
-        2. This setting enables or disables support for incoming multicast traffic. Disabling this feature will not affect the camera's ability to provide multicast video. 
-        3. For multi-sensor cameras, HTTP commands streamip, sapip and rtpport are channel specific and not global. Currently SurroundVideo series is the only multi-sensor camera that supports these multicast HTTP commands, starting from firmware 65192.14.
-      schema:
-        type: integer
-        minimum: 0
-        maximum: 1
-      
-# stopped at multicast - resume at 43. multicast frame rate setting.
-    res:
-      name: res
-      in: query
-      description: The resolution MJPEGs you want to return
-      required: false
-      schema:
-        type: string
-        enum: [full, half]
-    x0:
-      name: x0
-      in: query
-      description: | 
-        Left coordinate, used to offset the image. This value should be divisible by 32 if `res=full` or 64 if `res=half`.
-      required: false
-      schema:
-        type: integer
-        format: int32
-    y0:
-      name: y0
-      in: query
-      description: |
-        Top coordinate, used to offset the image. This value should be divisible by 32 if `res=full` or 64 if `res=half`.
-      schema:
-        type: integer
-        format: int32
-    x1:
-      name: x1
-      in: query
-      description: |
-        Right coordinate, used to offset the image. This value should be divisible by 32 if `res=full` or 64 if `res=half`.
-      required: false
-      schema:
-        type: integer
-        format: int32
-    y1:
-      name: y1
-      in: query
-      description: |
-        Bottom coordinate, used to offset the image. This value should be divisible by 32 if `res=full` or 64 if `res=half`.
-      schema:
-        type: integer
-    qp:
-      name: qp
-      in: query
-      description: |
-        The quantization parameter for the H.264 encoder. Sets the target qp. Lower qp indicates a higher quality image. This paramaeter is ignored if your request includes the bitrate parameter. 
-      schema:
-        type: string
-        minimum: 16
-        maximum: 36
-      
-    qp_max:
-      name: qp_max
-      in: query
-      description: |
-        Get or set the maximum allowed QP value — i.e. the lowest allowable quality.
-      schema:
-        type: string
-        minimum: 16
-        maximum: 36
-      
-    ratelimit_mode:
-      name: ratelimit_mode
-      in: query
-      description: |
-        Get or set variable bitrate limit mode.
-      schema:
-        type: boolean
-      
-    ratelimit:
-      name: ratelimit
-      in: query
-      description: |
-        Get or set a variable bitrate limit.
-      schema:
-        type: string
-        minimum: 0
-        maximum: 65535
-
-    quality:
-      name: quality
-      in: query
-      description: The compression quality of the image
-      schema:
-        type: integer
-        minimum: 1
-        maximum: 21
-    doublescan:
-      name: doublescan
-      in: query
-      description: 
-        Effectively a boolean that determines whether or not the camera should delay image output until a new image is available.
-      schema:
-        type: integer
-        minimum: 0
-        maximum: 1
-    ssn:
-      name: ssn
-      in: query
-      description: |
-        Stream identifier — distinguishes multiple streams from one another. Use a unique ssn for each stream with a unique image size, quality and/or frame rate. Each camera supports up to eight simultaneous non-identical streams. Each client must have a unique (ip:ssn)
-      schema:
-        type: integer
-        minimum: 1
-        maximum: 65535
-    iframe:
-      name: iframe
-      in: query
-      description: | 
-        Effectively a boolean (0 or 1). Set to 1 will force the camera to return an Intra frame (I-frame) with a corresponding SPS and PPS as an IDR slice, so that the stream is decodable from this point. When opening a new stream (as when changing the image size and/or frame rate) the I-frame is sent automatically regardless of the input value of `iframe`. To reduce the stream size, reduce the frequency of `iframe = 1` in requests. You can set the P-frames for any of the streams sent by the camera is set using
-        one of the following HTTP commands :
-        http://camera_ip/setreg?page=3&reg=21&val=(0..100)
-
-        http://camera_ip/set?keyframeinterval=(0..100)
-        When the on-camera counter of P-frames fills up, the camera will return an I-frame even if iframe in the request is set to 0. To find out whether an I-frame was received, check the HTTP Content Type.
-      schema:
-        type: integer
-        maximum: 1
-        minimum: 0
-    bitrate:
-      name: bitrate
-      in: query
-      description: |
-        Sets a constant bitrate in kilobits per second. If this parameter is present in the request, the QP parameter is ignored, and the camera adjusts quantization parameters automatically to maintain the specified bitrate.
-      schema:
-        type: integer
-        minimum: 1
-        maximum: 65535
-      
-    intra_period:
-      name: intra_period
-      in: query
-      description: |
-         Valid when requesting a non-zero bitrate and periodically requesting `iframe=1`. Specifies the intra-frame period during which you are sending requests with `iframe=1`. If you do not specify `intra_period`, bitrate control will not function correctly unless the actual period of sending iframe=1 requests is the same as the number of P-frames specified in register 3:21 of the camera via one of the commands described above. If you do not request `iframe=1` at all, then the `intra_period` parameter is not required and bitrate control will rely on the number of P-frames set in register 3:21. 
-      schema:
-        type: integer
-        minimum: 0
-        maximum: 255
-    fps:
-      name: fps
-      in: query
-      description: Get or set the camera framerate. values over the camera's famerate will return the camera's maximum framerate (model dependent).
-      schema:
-        type: integer
-        minimum: 0
-        maximum: 30
-      
-    channel:
-      name: channel
-      in: query
-      description: |
-        If `upscaling=on`, use the channel parameter to retrieve color or monochrome images from the camera.
-      schema:
-        type: string
-        enum: [color, mono]
-    keyframe:
-      name: keyframe
-      in: query
-      description: |
-        Get or set key frame setting. Yields an I-frame on the next available frame.
-      schema:
-        type: boolean
-      
-    keyframeinterval:
-      name: keyframeinterval
-      in: query
-      description: |
-        Get or set the key frame interval.
-
-        * For non-4K models the maximum limit is 100
-        * The numerical value in “set?keyframeinterval=(0…65535)” represents the P-frame count between two consecutive key frames (I-frames)
-      schema:
-        type: integer
-        minimum: 0
-        maximum: 200
-        default: 50
-      
-    rtspport:
-      name: rtspport
-      in: query
-      description: |
-        Get or set the RTSP port.
-      schema:
-        type: integer
-        minimum: 0
-        maximum: 65535
-        default: 554
-      
-    spacialfilter:
-      name: spacialfilter
-      in: query
-      description: |
-        Get or set the low-light noise filter.
-      schema:
-        type: integer
-        minimum: 0
-        maximum: 100
-      
-    name:
-      name: name
-      in: query
-      description: |
-        Get or set the camera name.
-      schema:
-        type: string
-        minLength: 0
-        maxLength: 32
-      
-    mtu:
-      name: mtu
-      in: query
-      description: |
-        Get or set the MTU size.
-      schema:
-        type: integer
-        minimum: 512
-        maximum: 1500
-      
-    ip:
-      name: ip
-      in: query
-      description: |
-        Get or set the camera's IP address.
-      schema:
-        type: string
-        pattern: ^([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])$
-      
-    subnetmask:
-      name: subnetmask
-      in: query
-      description: |
-        Get or set the camera's subnet mask.
-      schema:
-        type: string
-        pattern: ^([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])$
-      
-    gateway:
-      name: gateway
-      in: query
-      description: |
-        Get or set the camera's default gateway.
-      schema:
-        type: string
-        pattern: ^([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])$
-      
-    eth_negotiation:
-      name: eth_negotiation
-      in: query
-      description: |
-        When set to auto, auto negotiation is enabled. Connected devices will first share their transmission capabilities, such as speed and duplex mode, and then choose the highest performance transmission mode they both support.
-        
-        When set to fixed, the camera uses a transmission speed of 100Mb and full duplex mode.
-      schema:
-        type: string
-        enum: [auto, fixed]
-      
-    features:
-      name: features
-      in: query
-      description: |
-        Returns an integer for enabled features. Integers that are not returned are not enabled.
-      # need to list feature bits
-      schema:
-        type: integer
-      
-    audioinput:
-      name: audioinput
-      in: query
-      description: |
-        The source of audio input.
-      schema:
-        type: string
-        enum: [mic, linein]
-      
-    linein_volume:
-      name: linein_volume
-      in: query
-      description: |
-        Volume of line-in audio.
-      schema:
-        type: integer
-        minimum: 0
-        maximum: 45
-      
-    mic_boost:
-      name: mic_boost
-      in: query
-      description: |
-        Volume of microphone-in audio.
-      schema:
-        type: integer
-        minimum: 0
-        maximum: 2
-      
-    piris:
-      name: piris
-      in: query
-      description: |
-        Enable/disable P-iris
-      schema:
-        type: string
-        enum: [on, off]
-      
-    pirispos:
-      name: pirispos
-      in: query
-      description: |
-        The position P-iris closes to
-      schema:
-        type: integer
-        minimum: 0
-        maximum: 255
-      
-    ir:
-      name: ir
-      in: query
-      description: |
-        Infrafred light control. `on` enables IR in night mode; `alwayson` enables IR always.
-      schema:
-        type: string
-        enum: [on, alwayson, off]
-      
-    make:
-      name: make
-      in: query
-      description: |
-        Get the make of the camera.
-      schema:
-        type: string
-      
-    white_balance:
-      name: white_balance
-      in: query
-      description: |
-        White balance control.
-      schema:
-        type: string
-        enum: [on, off]
-      
-    wbwndctrl:
-      name: wbwndctrl
-      in: query
-      description: |
-        White balance window control.
-      schema:
-        type: string
-        enum: [on, off]
-      
-    wbwndleft:
-      name: wbwndleft
-      in: query
-      description: |
-        White balance window left start value. Maximum values depend on your sensor size.
-      schema:
-        type: integer
-        minimum: 0
-    wbwndtop:
-      name: wbwndtop
-      in: query
-      description: |
-        White balance window top start value. Maximum values depend on your sensor size.
-      schema:
-        type: integer
-        minimum: 0
-    wbwndwidth:
-      name: wbwndwidth
-      in: query
-      description: |
-        White balance window width, beginning from the `wbwndleft` value. Maximum values depend on your sensor size.
-      schema:
-        type: integer
-        minimum: 0
-    wbwndheight:
-      name: wbwndheight
-      in: query
-      description: |
-        White balance window height, beginning from the `wbwndtop` value. Maximum values depend on your sensor size.
-      schema:
-        type: integer
-        minimum: 0
-    ntpserver_ip:
-      name: ntpserver_ip
-      in: query
-      description: |
-        NTP server address.
-      schema:
-        type: string
-        pattern: ^([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])$
-      
-    enclosure:
-      name: enclosure
-      in: query
-      description: |
-        Returns the camera's model name. Provide `code` to return the model type number.
-      schema:
-        type: string
-        enum: [code]
-      
-    gamma:
-      name: gamma
-      in: query
-      description: |
-        Gamma for single sensor and Surroundvideo1 cameras.
-      schema:
-        type: integer
-        minimum: 0
-        maximum: 100
-      
-    gamma2:
-      name: gamma2
-      in: query
-      description: |
-        Gamma for the second sensor in dual sensor cameras.
-      schema:
-        type: integer
-        minimum: 0
-        maximum: 100
-      
-    bandwidthsaving:
-      name: bandwidthsaving
-      in: query
-      description: |
-        Bandwidth saving mode settings.
-      schema:
-        type: string
-        enum: [on, off]
-      
-    lowpower:
-      name: lowpower
-      in: query
-      description: |
-        Low power mode settings.
-      schema:
-        type: string
-        enum: [on, off]
-      
-    motion_compensation:
-      name: motion_compensation
-      in: query
-      description: |
-        Motion compensation settings.
-      schema:
-        type: string
-        enum: [on, off]
-      
-    adjustable_ir:
-      name: adjustable_ir
-      in: query
-      description: |
-        Adjustable IR light settings.
-      schema:
-        type: string
-        enum: [adaptive, preset, disabled]
-      
-    irwidepos:
-      name: irwidepos
-      in: query
-      description: |
-        The adjustable intensity of wide IR lights.
-      schema:
-        type: integer
-        minimum: 0
-        maximum: 7
-      
-    irtelepos:
-      name: irtelpos
-      in: query
-      description: |
-        The adjustable intensity of tele IR lights.
-      schema:
-        type: integer
-        minimum: 0
-        maximum: 7
-      
-    #ir tele position for different channels
-
-    snapstream:
-      name: snapstream
-      in: query
-      description: |
-        Snapstream on/off setting.
-      schema:
-        type: string
-        enum: [on, off]
-      
-    sensorcount:
-      name: sensorcount
-      in: query
-      description: |
-        Returns the sensor count. Use the sensor count to determine the channels you want to get or set when 
-      schema:
-        type: integer
-      
-  parameters:
     ver:
       name: ver
       in: query
@@ -1972,7 +2331,9 @@ components:
         Use HTTP/1.1 if you want faster full duplex communication and image delivery.
       schema:
         type: string
-        enum: [HTTP/1.0, HTTP/1.1]
+        enum:
+          - HTTP/1.0
+          - HTTP/1.1
     irpos_chan1:
       name: irpos_chan1
       in: query
@@ -2048,7 +2409,9 @@ components:
         Enables or disables day binning mode for supported cameras.
       schema:
         type: string
-        enum: [on, off]
+        enum:
+          - 'on'
+          - 'off'
       allowEmptyValue: true
     night_binning:
       name: night_binning
@@ -2057,15 +2420,21 @@ components:
         Enables or disables day binning mode for supported cameras.
       schema:
         type: string
-        enum: [on, off]
+        enum:
+          - 'on'
+          - 'off'
       allowEmptyValue: true
     daynight:
       name: daynight
       in: query
-      description: Sets day/night mode. Cameras default to `auto`, which sets day and night modes automatically. `dual` allows the client to pull both color and grayscale images simultaneously.
+      description: 'Sets day/night mode. Cameras default to `auto`, which sets day and night modes automatically. `dual` allows the client to pull both color and grayscale images simultaneously.'
       schema:
         type: string
-        enum: [auto, day, night, dual]
+        enum:
+          - auto
+          - day
+          - night
+          - dual
     upscaling:
       name: upscaling
       in: query
@@ -2073,19 +2442,23 @@ components:
         Scales monocrome images to the same size as color images. If upscaling is disabled, the ratio is 1.6 between color images and monochrome images. 
       schema:
         type: string
-        enum: [on, off]
+        enum:
+          - 'on'
+          - 'off'
     scaling:
       name: scaling
       in: query
       description: Enable or disable down-scaling.
       schema:
         type: string
-        enum: [on, off]
+        enum:
+          - 'on'
+          - 'off'
       allowEmptyValue: true
     scaling_size:
       name: scaling
       in: query
-      description: Set scaling size as `width, height`. Width ranges from 128 to 1280; height ranges from 96 to 720.
+      description: 'Set scaling size as `width, height`. Width ranges from 128 to 1280; height ranges from 96 to 720.'
       schema:
         type: string
       allowEmptyValue: true
@@ -2153,11 +2526,15 @@ components:
       description: Sets illumination for the camera or channel.
       schema:
         type: string
-        enum: [auto, indoor, outdoor, mlx]
+        enum:
+          - auto
+          - indoor
+          - outdoor
+          - mlx
     freq:
       name: freq
       in: query
-      description: Mains frequency in Hz, used for indoor lighting compensation.
+      description: 'Mains frequency in Hz, used for indoor lighting compensation.'
       schema:
         type: integer
         minimum: 50
@@ -2169,11 +2546,16 @@ components:
       description: Exposure (low light) mode.
       schema:
         type: string
-        enum: [highspeed, speed, balance, quality, moonlight]
+        enum:
+          - highspeed
+          - speed
+          - balance
+          - quality
+          - moonlight
     shortexposures:
       name: shortexposures
       in: query
-      description: Shutter time in high-speed exposure mode, set in milliseconds.
+      description: 'Shutter time in high-speed exposure mode, set in milliseconds.'
       schema:
         type: integer
         minimum: 1
@@ -2184,14 +2566,19 @@ components:
       description: Auto exposure mode
       schema:
         type: string
-        enum: [auto, on, off]
+        enum:
+          - auto
+          - 'on'
+          - 'off'
     autoexp:
       name: autoexp
       in: query
       description: Auto exposure mode
       schema:
         type: string
-        enum: [on, off]
+        enum:
+          - 'on'
+          - 'off'
     expwndleft:
       name: expwndleft
       in: query
@@ -2223,7 +2610,7 @@ components:
     sensorleft:
       name: sensorleft
       in: query
-      description: Sensor cropping, from the left.
+      description: 'Sensor cropping, from the left.'
       schema:
         type: integer
         minimum: 0
@@ -2244,42 +2631,42 @@ components:
     sensorheight:
       name: sensorheight
       in: query
-      description: Sensor cropping based on height. The top and bottom are equally cropped by half the value, centering the image.
+      description: 'Sensor cropping based on height. The top and bottom are equally cropped by half the value, centering the image.'
       schema:
         type: integer
         minimum: 0
     imgleft:
       name: imgleft
       in: query
-      description: Image setting, used as the implcit perameter in img.jpg image requests.
+      description: 'Image setting, used as the implcit perameter in img.jpg image requests.'
       schema:
         type: integer
         minimum: 0
     imgtop:
       name: imgtop
       in: query
-      description: Image setting, used as the implcit perameter in img.jpg image requests.
+      description: 'Image setting, used as the implcit perameter in img.jpg image requests.'
       schema:
         type: integer
         minimum: 0
     imgwidth:
       name: imgwidth
       in: query
-      description: Image setting, used as the implcit perameter in img.jpg image requests.
+      description: 'Image setting, used as the implcit perameter in img.jpg image requests.'
       schema:
         type: integer
         minimum: 0
     imgheight:
       name: imgheight
       in: query
-      description: Image setting, used as the implcit perameter in img.jpg image requests.
+      description: 'Image setting, used as the implcit perameter in img.jpg image requests.'
       schema:
         type: integer
         minimum: 0
     imgquality:
       name: imgquality
       in: query
-      description: Image setting, used as the implcit perameter list in img.jpg image requests.
+      description: 'Image setting, used as the implcit perameter list in img.jpg image requests.'
       schema:
         type: integer
         minimum: 1
@@ -2287,10 +2674,12 @@ components:
     imgres:
       name: imgres
       in: query
-      description: Image setting, used as the implcit perameter list in img.jpg image requests.
+      description: 'Image setting, used as the implcit perameter list in img.jpg image requests.'
       schema:
         type: string
-        enum: [full, half]
+        enum:
+          - full
+          - half
     mac:
       name: mac
       in: query
@@ -2303,7 +2692,11 @@ components:
       description: Returns the camera's model number. `fullname` returns the camera's base model number and feature leter; `releasename` returns the manufacturer model number and feature letter — the real model number.
       schema:
         type: string
-        enum: [fullname, releasename, lpn, internal]
+        enum:
+          - fullname
+          - releasename
+          - lpn
+          - internal
       allowEmptyValue: true
     fwversion:
       name: fwversion
@@ -2344,7 +2737,10 @@ components:
         * reboot - restarts the camera
       schema:
         type: string
-        enum: [save, factory, reboot]
+        enum:
+          - save
+          - factory
+          - reboot
     webserverport:
       name: webserverport
       in: query
@@ -2367,7 +2763,8 @@ components:
             format: password
           - type: string
             description: The keyword to erase the current password.
-            enum: [empty]
+            enum:
+              - empty
       allowEmptyValue: true
     viewer:
       name: viewer
@@ -2382,7 +2779,8 @@ components:
             format: password
           - type: string
             description: The keyword to erase the current password.
-            enum: [empty]
+            enum:
+              - empty
     maxsensorwidth:
       name: maxsensorwidth
       in: query
@@ -2403,7 +2801,9 @@ components:
       description: Get or set motion alarm settings
       schema:
         type: string
-        enum: [on, off]
+        enum:
+          - 'on'
+          - 'off'
       allowEmptyValue: true
     motiondetect:
       name: motiondetect
@@ -2411,7 +2811,9 @@ components:
       description: Get or set motion detection settings
       schema:
         type: string
-        enum: [on, off]
+        enum:
+          - 'on'
+          - 'off'
       allowEmptyValue: true
     mdtotalzones:
       name: mdtotalzones
@@ -2420,8 +2822,6 @@ components:
       schema:
         type: integer
       allowEmptyValue: true
-    # add custom mode settings
-    # add info about motion detection zones
     auxin:
       name: auxin
       in: query
@@ -2435,16 +2835,20 @@ components:
       description: Get or set auxiliary audio out.
       schema:
         type: string
-        enum: [on, off]
+        enum:
+          - 'on'
+          - 'off'
       allowEmptyValue: true
     cropping:
       name: cropping
       in: query
-      description: | 
+      description: |
         Get or set flexible cropping.
       schema:
         type: string
-        enum: [on, off]
+        enum:
+          - 'on'
+          - 'off'
       allowEmptyValue: true
     1080p_mode:
       name: 1080p_mode
@@ -2453,7 +2857,9 @@ components:
         Get or set 1080p mode — used in 10xx5 models only.
       schema:
         type: string
-        enum: [on, off]
+        enum:
+          - 'on'
+          - 'off'
       allowEmptyValue: true
     pmask:
       name: pmask
@@ -2462,7 +2868,9 @@ components:
         Get or set the privacy mask. Use `pmask<direction>` to set the privacy mask block.
       schema:
         type: string
-        enum: [on, off]
+        enum:
+          - 'on'
+          - 'off'
       allowEmptyValue: true
     pmaskblock:
       name: pmaskblock
@@ -2471,9 +2879,10 @@ components:
         Set the privacy mask block.
       schema:
         type: string
-        enum: [on, off]
+        enum:
+          - 'on'
+          - 'off'
       allowEmptyValue: true
-    # add pmask directions
     focus:
       name: focus
       in: query
@@ -2482,7 +2891,10 @@ components:
       schema:
         oneOf:
           - type: string
-            enum: [fullrange, shortrange, status]
+            enum:
+              - fullrange
+              - shortrange
+              - status
           - type: integer
             minimum: -20
             maximum: 20
@@ -2511,9 +2923,6 @@ components:
       schema:
         type: integer
         minimum: 0
-          
-        
-    # get focus status?
     zoom:
       name: zoom
       in: query
@@ -2522,7 +2931,8 @@ components:
       schema:
         oneOf:
           - type: string
-            enum: [reset]
+            enum:
+              - reset
             description: Resets zoom level.
           - type: integer
             minimum: -20
@@ -2533,7 +2943,7 @@ components:
       description: Get or set the four sides of the focus window.
       schema:
         type: array
-        description: When setting the focus window, provide the four values of the focus window as comma-separated integers from 0 to the maximum sensor value — width, height, width, height.
+        description: 'When setting the focus window, provide the four values of the focus window as comma-separated integers from 0 to the maximum sensor value — width, height, width, height.'
         minItems: 4
         maxItems: 4
         items:
@@ -2546,7 +2956,9 @@ components:
         Get or set autofocus after enabling the day-night switch.
       schema:
         type: string
-        enum: [on, off]
+        enum:
+          - 'on'
+          - 'off'
       allowEmptyValue: true
     af_zoom:
       name: af_zoom
@@ -2554,7 +2966,9 @@ components:
       description: Get or set autofocus after zoom.
       schema:
         type: string
-        enum: [on, off]
+        enum:
+          - 'on'
+          - 'off'
       allowEmptyValue: true
     casino_mode:
       name: casino_mode
@@ -2562,7 +2976,9 @@ components:
       description: Get or set casino mode (1080p models only)
       schema:
         type: string
-        enum: [on, off]
+        enum:
+          - 'on'
+          - 'off'
       allowEmptyValue: true
     netopt:
       name: netopt
@@ -2584,7 +3000,7 @@ components:
       schema:
         type: string
         format: ipv4
-        pattern: ^([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])$
+        pattern: '^([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])$'
       allowEmptyValue: true
     rtpport:
       name: rtpport
@@ -2602,7 +3018,7 @@ components:
       schema:
         type: string
         format: ipv4
-        pattern: ^([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])$
+        pattern: '^([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])$'
       allowEmptyValue: true
     multicast_rec:
       name: multicast_rec
@@ -2610,7 +3026,9 @@ components:
       description: Get or set the multicast reception setting.
       schema:
         type: string
-        enum: [on, off]
+        enum:
+          - 'on'
+          - 'off'
       allowEmptyValue: true
     en_multicast:
       name: en_multicast
@@ -2626,7 +3044,6 @@ components:
         minimum: 0
         maximum: 1
       allowEmptyValue: true
-# stopped at multicast - resume at 43. multicast frame rate setting.
     res:
       name: res
       in: query
@@ -2634,11 +3051,13 @@ components:
       required: false
       schema:
         type: string
-        enum: [full, half]
+        enum:
+          - full
+          - half
     x0:
       name: x0
       in: query
-      description: | 
+      description: |
         Left coordinate, used to offset the image. This value should be divisible by 32 if `res=full` or 64 if `res=half`.
       required: false
       schema:
@@ -2705,7 +3124,6 @@ components:
         type: string
         minimum: 0
         maximum: 65535
-
     quality:
       name: quality
       in: query
@@ -2717,8 +3135,7 @@ components:
     doublescan:
       name: doublescan
       in: query
-      description: 
-        Effectively a boolean that determines whether or not the camera should delay image output until a new image is available.
+      description: Effectively a boolean that determines whether or not the camera should delay image output until a new image is available.
       schema:
         type: integer
         minimum: 0
@@ -2735,7 +3152,7 @@ components:
     iframe:
       name: iframe
       in: query
-      description: | 
+      description: |
         Effectively a boolean (0 or 1). Set to 1 will force the camera to return an Intra frame (I-frame) with a corresponding SPS and PPS as an IDR slice, so that the stream is decodable from this point. When opening a new stream (as when changing the image size and/or frame rate) the I-frame is sent automatically regardless of the input value of `iframe`. To reduce the stream size, reduce the frequency of `iframe = 1` in requests. You can set the P-frames for any of the streams sent by the camera is set using
         one of the following HTTP commands :
         http://camera_ip/setreg?page=3&reg=21&val=(0..100)
@@ -2760,7 +3177,7 @@ components:
       name: intra_period
       in: query
       description: |
-         Valid when requesting a non-zero bitrate and periodically requesting `iframe=1`. Specifies the intra-frame period during which you are sending requests with `iframe=1`. If you do not specify `intra_period`, bitrate control will not function correctly unless the actual period of sending iframe=1 requests is the same as the number of P-frames specified in register 3:21 of the camera via one of the commands described above. If you do not request `iframe=1` at all, then the `intra_period` parameter is not required and bitrate control will rely on the number of P-frames set in register 3:21. 
+        Valid when requesting a non-zero bitrate and periodically requesting `iframe=1`. Specifies the intra-frame period during which you are sending requests with `iframe=1`. If you do not specify `intra_period`, bitrate control will not function correctly unless the actual period of sending iframe=1 requests is the same as the number of P-frames specified in register 3:21 of the camera via one of the commands described above. If you do not request `iframe=1` at all, then the `intra_period` parameter is not required and bitrate control will rely on the number of P-frames set in register 3:21. 
       schema:
         type: integer
         minimum: 0
@@ -2781,7 +3198,9 @@ components:
         If `upscaling=on`, use the channel parameter to retrieve color or monochrome images from the camera.
       schema:
         type: string
-        enum: [color, mono]
+        enum:
+          - color
+          - mono
     keyframe:
       name: keyframe
       in: query
@@ -2852,7 +3271,7 @@ components:
         Get or set the camera's IP address.
       schema:
         type: string
-        pattern: ^([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])$
+        pattern: '^([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])$'
       allowEmptyValue: true
     subnetmask:
       name: subnetmask
@@ -2861,7 +3280,7 @@ components:
         Get or set the camera's subnet mask.
       schema:
         type: string
-        pattern: ^([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])$
+        pattern: '^([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])$'
       allowEmptyValue: true
     gateway:
       name: gateway
@@ -2870,25 +3289,26 @@ components:
         Get or set the camera's default gateway.
       schema:
         type: string
-        pattern: ^([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])$
+        pattern: '^([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])$'
       allowEmptyValue: true
     eth_negotiation:
       name: eth_negotiation
       in: query
       description: |
         When set to auto, auto negotiation is enabled. Connected devices will first share their transmission capabilities, such as speed and duplex mode, and then choose the highest performance transmission mode they both support.
-        
+
         When set to fixed, the camera uses a transmission speed of 100Mb and full duplex mode.
       schema:
         type: string
-        enum: [auto, fixed]
+        enum:
+          - auto
+          - fixed
       allowEmptyValue: true
     features:
       name: features
       in: query
       description: |
         Returns an integer for enabled features. Integers that are not returned are not enabled.
-      # need to list feature bits
       schema:
         type: integer
       allowEmptyValue: true
@@ -2899,7 +3319,9 @@ components:
         The source of audio input.
       schema:
         type: string
-        enum: [mic, linein]
+        enum:
+          - mic
+          - linein
       allowEmptyValue: true
     linein_volume:
       name: linein_volume
@@ -2928,7 +3350,9 @@ components:
         Enable/disable P-iris
       schema:
         type: string
-        enum: [on, off]
+        enum:
+          - 'on'
+          - 'off'
       allowEmptyValue: true
     pirispos:
       name: pirispos
@@ -2947,7 +3371,10 @@ components:
         Infrafred light control. `on` enables IR in night mode; `alwayson` enables IR always.
       schema:
         type: string
-        enum: [on, alwayson, off]
+        enum:
+          - 'on'
+          - alwayson
+          - 'off'
       allowEmptyValue: true
     make:
       name: make
@@ -2964,7 +3391,9 @@ components:
         White balance control.
       schema:
         type: string
-        enum: [on, off]
+        enum:
+          - 'on'
+          - 'off'
       allowEmptyValue: true
     wbwndctrl:
       name: wbwndctrl
@@ -2973,7 +3402,9 @@ components:
         White balance window control.
       schema:
         type: string
-        enum: [on, off]
+        enum:
+          - 'on'
+          - 'off'
       allowEmptyValue: true
     wbwndleft:
       name: wbwndleft
@@ -3014,7 +3445,7 @@ components:
         NTP server address.
       schema:
         type: string
-        pattern: ^([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])$
+        pattern: '^([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])$'
       allowEmptyValue: true
     enclosure:
       name: enclosure
@@ -3023,7 +3454,8 @@ components:
         Returns the camera's model name. Provide `code` to return the model type number.
       schema:
         type: string
-        enum: [code]
+        enum:
+          - code
       allowEmptyValue: true
     gamma:
       name: gamma
@@ -3047,13 +3479,14 @@ components:
       allowEmptyValue: true
     bandwidthsaving:
       name: bandwidthsaving
-      gamma:
       in: query
       description: |
         Bandwidth saving mode settings.
       schema:
         type: string
-        enum: [on, off]
+        enum:
+          - 'on'
+          - 'off'
       allowEmptyValue: true
     lowpower:
       name: lowpower
@@ -3062,7 +3495,9 @@ components:
         Low power mode settings.
       schema:
         type: string
-        enum: [on, off]
+        enum:
+          - 'on'
+          - 'off'
       allowEmptyValue: true
     motion_compensation:
       name: motion_compensation
@@ -3071,7 +3506,9 @@ components:
         Motion compensation settings.
       schema:
         type: string
-        enum: [on, off]
+        enum:
+          - 'on'
+          - 'off'
       allowEmptyValue: true
     adjustable_ir:
       name: adjustable_ir
@@ -3080,7 +3517,10 @@ components:
         Adjustable IR light settings.
       schema:
         type: string
-        enum: [adaptive, preset, disabled]
+        enum:
+          - adaptive
+          - preset
+          - disabled
       allowEmptyValue: true
     irwidepos:
       name: irwidepos
@@ -3102,8 +3542,6 @@ components:
         minimum: 0
         maximum: 7
       allowEmptyValue: true
-    #ir tele position for different channels
-
     snapstream:
       name: snapstream
       in: query
@@ -3111,7 +3549,9 @@ components:
         Snapstream on/off setting.
       schema:
         type: string
-        enum: [on, off]
+        enum:
+          - 'on'
+          - 'off'
       allowEmptyValue: true
     sensorcount:
       name: sensorcount
