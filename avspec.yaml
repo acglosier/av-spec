@@ -16,6 +16,8 @@ tags:
   - name: h.264 Streaming
     description: |
       Pull h.264 quality images individually or full video stream.
+  - name: Multisensor Camera Streaming
+    description: Get images or video from a sensor belonging to a multisensor camera.
   - name: Configuration
     description: Get and set camera configuration
   - name: Audio
@@ -92,6 +94,115 @@ paths:
           schema:
             type: integer
             minimum: 1
+      responses:
+        '200':
+          description: Returns an image
+          content:
+            multipart/x-mixed-replace; boundary=fbdr:
+              schema:
+                type: string
+                enum:
+                  - '--fbdr'
+                example: '--fbdr/r/n'
+  /mjpeg{channel}:
+    parameters:
+      - name: channel
+        description: The ID of the channel you want to return information for. If you do not specify the channel, the camera will transmit the next available image from any of the enabled channels.
+        in: path
+        required: true
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 4
+    get:
+      summary: Get an MJPEG Stream
+      tags:
+        - Multisensor Camera Streaming
+      description: |
+        open a continuous mjpeg stream from a sensor belonging to a multisensor camera.
+      operationId: multimjpeg
+      parameters:
+        - $ref: '#/components/parameters/res'
+        - $ref: '#/components/parameters/x0'
+        - $ref: '#/components/parameters/y0'
+        - $ref: '#/components/parameters/x1'
+        - $ref: '#/components/parameters/y1'
+        - $ref: '#/components/parameters/doublescan'
+        - $ref: '#/components/parameters/fps'
+        - name: quality
+          in: query
+          description: The compression quality of the jpeg image
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 21
+        - $ref: '#/components/parameters/ver'
+        - name: channel
+          in: query
+          description: |
+            Request down-scaled images. Because you preset downscaled image settings (through the UI or the /set endpoint), this parameter does not require size information.
+          schema:
+            type: string
+            enum: [scaled]
+        - $ref: "#/components/parameters/ssn"
+        - name: ID
+          in: query
+          description: |
+            Ignored by the camera, but you might set random IDs to force browsers to refresh a frame. Some browsers might display a cached image if a previous URL is reused without modifying the ID field
+          schema:
+            type: integer
+            minimum: 1
+        - $ref: '#/components/parameters/sd'
+      responses:
+        '200':
+          description: Returns a stream
+          content:
+            multipart/x-mixed-replace; boundary=fbdr:
+              schema:
+                type: string
+                enum:
+                  - '--fbdr'
+                example: |
+                  --fbdr/r/
+  /image{channel}:
+    parameters:
+      - name: channel
+        description: The ID of the channel you want to return information for. If you do not specify the channel, the camera will transmit the next available image from any of the enabled channels.
+        in: path
+        required: true
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 4
+    get:
+      summary: Get a JPEG Frame
+      tags:
+        - Multisensor Camera Streaming
+      description: Pull JPEG frames individually from the camera.
+      operationId: multijpeg
+      parameters:
+        - name: channel
+        - $ref: '#/components/parameters/res'
+        - $ref: '#/components/parameters/x0'
+        - $ref: '#/components/parameters/y0'
+        - $ref: '#/components/parameters/x1'
+        - $ref: '#/components/parameters/y1'
+        - $ref: '#/components/parameters/doublescan'
+        - name: quality
+          in: query
+          description: The compression quality of the jpeg image
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 21
+        - name: ID
+          in: query
+          description: |
+            Ignored by the camera, but you might set random IDs to force browsers to refresh a frame. Some browsers might display a cached image if a previous URL is reused without modifying the ID field
+          schema:
+            type: integer
+            minimum: 1
+        - $ref: "#/components/parameters/ssn"
       responses:
         '200':
           description: Returns an image
@@ -192,13 +303,162 @@ paths:
             type: integer
             minimum: 1
             maximum: 4
+        - $ref: '#/components/parameters/brightness'
+        - $ref: '#/components/parameters/sharpness'
+        - $ref: '#/components/parameters/saturation'
+        - $ref: '#/components/parameters/blue'
+        - $ref: '#/components/parameters/red'
+        - $ref: '#/components/parameters/illum'
+        - $ref: '#/components/parameters/freq'
+        - $ref: '#/components/parameters/lowlight'
+        - $ref: '#/components/parameters/shortexposures'
+        - $ref: '#/components/parameters/autoexp'
+        - $ref: '#/components/parameters/exposure'
+        - $ref: '#/components/parameters/kneepoint'
+        - $ref: '#/components/parameters/analoggain'
+        - $ref: '#/components/parameters/maxkneegain'
+        - $ref: '#/components/parameters/maxexptime'
+        - $ref: '#/components/parameters/maxdigitalgain'
+        - $ref: '#/components/parameters/mdmode'
+        - $ref: '#/components/parameters/motiondetect'
+        - $ref: '#/components/parameters/mdtotalzones'
+        - $ref: '#/components/parameters/mdlevelthreshold'
+        - $ref: '#/components/parameters/mddetail'
+        - $ref: '#/components/parameters/mdprivacymask'
+        - $ref: '#/components/parameters/mdresult'
+        - $ref: '#/components/parameters/pmask'
+        - $ref: '#/components/parameters/pmaskleft'
+        - $ref: '#/components/parameters/pmasktop'
+        - $ref: '#/components/parameters/pmaskright'
+        - $ref: '#/components/parameters/pmaskbottom'
+        - $ref: '#/components/parameters/streamip'
+        - $ref: '#/components/parameters/rtpport'
+        - $ref: '#/components/parameters/sapip'
+        - $ref: '#/components/parameters/vertical_shift'
       responses:
         '200':
           description: Returns the parameters specified in the query.
           content:
             text/plain:
               schema:
-                type: string
+                oneOf:
+                  - $ref: '#/components/schemas/brightness'
+                  - $ref: '#/components/schemas/sharpness'
+                  - $ref: '#/components/schemas/saturation'
+                  - $ref: '#/components/schemas/blue'
+                  - $ref: '#/components/schemas/red'
+                  - $ref: '#/components/schemas/illum'
+                  - $ref: '#/components/schemas/freq'
+                  - $ref: '#/components/schemas/lowlight'
+                  - $ref: '#/components/schemas/shortexposures'
+                  - $ref: '#/components/schemas/autoexp'
+                  - $ref: '#/components/schemas/exposure'
+                  - $ref: '#/components/schemas/kneepoint'
+                  - $ref: '#/components/schemas/analoggain'
+                  - $ref: '#/components/schemas/maxkneegain'
+                  - $ref: '#/components/schemas/maxexptime'
+                  - $ref: '#/components/schemas/maxdigitalgain'
+                  - $ref: '#/components/schemas/mdmode'
+                  - $ref: '#/components/schemas/motiondetect'
+                  - $ref: '#/components/schemas/mdtotalzones'
+                  - $ref: '#/components/schemas/mdlevelthreshold'
+                  - $ref: '#/components/schemas/mddetail'
+                  - $ref: '#/components/schemas/mdprivacymask'
+                  - $ref: '#/components/schemas/mdresult'
+                  - $ref: '#/components/schemas/pmask'
+                  - $ref: '#/components/schemas/pmaskleft'
+                  - $ref: '#/components/schemas/pmasktop'
+                  - $ref: '#/components/schemas/pmaskright'
+                  - $ref: '#/components/schemas/pmaskbottom'
+                  - $ref: '#/components/schemas/streamip'
+                  - $ref: '#/components/schemas/rtpport'
+                  - $ref: '#/components/schemas/sapip'
+                  - $ref: '#/components/schemas/vertical_shift'
+    post:
+      tags:
+        - Configuration
+      summary: Set Multisensor Camera Settings
+      description: |
+        Set parameters for a single channel in a multi-sensor camera. In general, you should use only one query parameter at a time.
+      parameters:
+        - name: channel
+          description: The ID of the channel you want to return information for.
+          in: path
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 4
+        - $ref: '#/components/parameters/brightness'
+        - $ref: '#/components/parameters/sharpness'
+        - $ref: '#/components/parameters/saturation'
+        - $ref: '#/components/parameters/blue'
+        - $ref: '#/components/parameters/red'
+        - $ref: '#/components/parameters/illum'
+        - $ref: '#/components/parameters/freq'
+        - $ref: '#/components/parameters/lowlight'
+        - $ref: '#/components/parameters/shortexposures'
+        - $ref: '#/components/parameters/autoexp'
+        - $ref: '#/components/parameters/exposure'
+        - $ref: '#/components/parameters/kneepoint'
+        - $ref: '#/components/parameters/analoggain'
+        - $ref: '#/components/parameters/maxkneegain'
+        - $ref: '#/components/parameters/maxexptime'
+        - $ref: '#/components/parameters/maxdigitalgain'
+        - $ref: '#/components/parameters/mdmode'
+        - $ref: '#/components/parameters/motiondetect'
+        - $ref: '#/components/parameters/mdtotalzones'
+        - $ref: '#/components/parameters/mdlevelthreshold'
+        - $ref: '#/components/parameters/mddetail'
+        - $ref: '#/components/parameters/mdprivacymask'
+        - $ref: '#/components/parameters/mdresult'
+        - $ref: '#/components/parameters/pmask'
+        - $ref: '#/components/parameters/pmaskleft'
+        - $ref: '#/components/parameters/pmasktop'
+        - $ref: '#/components/parameters/pmaskright'
+        - $ref: '#/components/parameters/pmaskbottom'
+        - $ref: '#/components/parameters/streamip'
+        - $ref: '#/components/parameters/rtpport'
+        - $ref: '#/components/parameters/sapip'
+        - $ref: '#/components/parameters/vertical_shift'
+      responses:
+        '200':
+          description: Returns the parameters specified in the query.
+          content:
+            text/plain:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/brightness'
+                  - $ref: '#/components/schemas/sharpness'
+                  - $ref: '#/components/schemas/saturation'
+                  - $ref: '#/components/schemas/blue'
+                  - $ref: '#/components/schemas/red'
+                  - $ref: '#/components/schemas/illum'
+                  - $ref: '#/components/schemas/freq'
+                  - $ref: '#/components/schemas/lowlight'
+                  - $ref: '#/components/schemas/shortexposures'
+                  - $ref: '#/components/schemas/autoexp'
+                  - $ref: '#/components/schemas/exposure'
+                  - $ref: '#/components/schemas/kneepoint'
+                  - $ref: '#/components/schemas/analoggain'
+                  - $ref: '#/components/schemas/maxkneegain'
+                  - $ref: '#/components/schemas/maxexptime'
+                  - $ref: '#/components/schemas/maxdigitalgain'
+                  - $ref: '#/components/schemas/mdmode'
+                  - $ref: '#/components/schemas/motiondetect'
+                  - $ref: '#/components/schemas/mdtotalzones'
+                  - $ref: '#/components/schemas/mdlevelthreshold'
+                  - $ref: '#/components/schemas/mddetail'
+                  - $ref: '#/components/schemas/mdprivacymask'
+                  - $ref: '#/components/schemas/mdresult'
+                  - $ref: '#/components/schemas/pmask'
+                  - $ref: '#/components/schemas/pmaskleft'
+                  - $ref: '#/components/schemas/pmasktop'
+                  - $ref: '#/components/schemas/pmaskright'
+                  - $ref: '#/components/schemas/pmaskbottom'
+                  - $ref: '#/components/schemas/streamip'
+                  - $ref: '#/components/schemas/rtpport'
+                  - $ref: '#/components/schemas/sapip'
+                  - $ref: '#/components/schemas/vertical_shift'
   /get:
     get:
       tags:
@@ -341,6 +601,11 @@ paths:
         - $ref: '#/components/parameters/ipv6dhcp'
         - $ref: '#/components/parameters/ipv6addresstype'
         - $ref: '#/components/parameters/ipv6acceptrouters'
+        - $ref: '#/components/parameters/equalbright'
+        - $ref: '#/components/parameters/equalcolor'
+        - $ref: '#/components/parameters/vertical_alignment'
+        - $ref: '#/components/parameters/piris_ref_channel'
+        - $ref: '#/components/parameters/exp_ref_channel'
       responses:
         '200':
           description: Returns the parameters specified in the query.
@@ -459,6 +724,8 @@ paths:
                   - $ref: '#/components/schemas/irpos_chan2'
                   - $ref: '#/components/schemas/snapstream'
                   - $ref: '#/components/schemas/sensorcount'
+                  - $ref: '#/components/schemas/scaling'
+                  - $ref: '#/components/schemas/scaling_size'
                   - $ref: '#/components/schemas/sd_codec'
                   - $ref: '#/components/schemas/sd_fps'
                   - $ref: '#/components/schemas/sd_recording'
@@ -480,6 +747,11 @@ paths:
                   - $ref: '#/components/schemas/ipv6dhcp'
                   - $ref: '#/components/schemas/ipv6addresstype'
                   - $ref: '#/components/schemas/ipv6acceptrouters'
+                  - $ref: '#/components/schemas/equalbright'
+                  - $ref: '#/components/schemas/equalcolor'
+                  - $ref: '#/components/schemas/vertical_alignment'
+                  - $ref: '#/components/schemas/piris_ref_channel'
+                  - $ref: '#/components/schemas/exp_ref_channel'
   /set:
     post:
       summary: Set Camera Settings
@@ -492,7 +764,6 @@ paths:
         - $ref: '#/components/parameters/daynight'
         - $ref: '#/components/parameters/upscaling'
         - $ref: '#/components/parameters/channelenable'
-        - $ref: '#/components/parameters/rotate'
         - $ref: '#/components/parameters/brightness'
         - $ref: '#/components/parameters/sharpness'
         - $ref: '#/components/parameters/saturation'
@@ -518,7 +789,6 @@ paths:
         - $ref: '#/components/parameters/imgheight'
         - $ref: '#/components/parameters/imgquality'
         - $ref: '#/components/parameters/imgres'
-        - $ref: '#/components/parameters/params'
         - $ref: '#/components/parameters/kneepoint'
         - $ref: '#/components/parameters/analoggain'
         - $ref: '#/components/parameters/maxkneegain'
@@ -527,6 +797,12 @@ paths:
         - $ref: '#/components/parameters/webserverport'
         - $ref: '#/components/parameters/admin'
         - $ref: '#/components/parameters/viewer'
+        - $ref: '#/components/parameters/maxsensorwidth'
+        - $ref: '#/components/parameters/maxsensorheight'
+        - $ref: '#/components/parameters/mdmode'
+        - $ref: '#/components/parameters/motiondetect'
+        - $ref: '#/components/parameters/mdtotalzones'
+        - $ref: '#/components/parameters/auxin'
         - $ref: '#/components/parameters/auxout'
         - $ref: '#/components/parameters/cropping'
         - $ref: '#/components/parameters/1080p_mode'
@@ -551,7 +827,6 @@ paths:
         - $ref: '#/components/parameters/ratelimit'
         - $ref: '#/components/parameters/bitrate'
         - $ref: '#/components/parameters/keyframeinterval'
-        - $ref: '#/components/parameters/keyframe'
         - $ref: '#/components/parameters/rtspport'
         - $ref: '#/components/parameters/spacialfilter'
         - $ref: '#/components/parameters/name'
@@ -561,6 +836,7 @@ paths:
         - $ref: '#/components/parameters/gateway'
         - $ref: '#/components/parameters/webserverport'
         - $ref: '#/components/parameters/eth_negotiation'
+        - $ref: '#/components/parameters/features'
         - $ref: '#/components/parameters/audioinput'
         - $ref: '#/components/parameters/linein_volume'
         - $ref: '#/components/parameters/mic_boost'
@@ -585,6 +861,7 @@ paths:
         - $ref: '#/components/parameters/irpos_chan1'
         - $ref: '#/components/parameters/irpos_chan2'
         - $ref: '#/components/parameters/snapstream'
+        - $ref: '#/components/parameters/sensorcount'
         - $ref: '#/components/parameters/scaling'
         - $ref: '#/components/parameters/scaling_size'
         - $ref: '#/components/parameters/sd_codec'
@@ -594,7 +871,6 @@ paths:
         - $ref: '#/components/parameters/sd_motionalarm'
         - $ref: '#/components/parameters/sd_ioalarm'
         - $ref: '#/components/parameters/sd_stampspan'
-        - $ref: '#/components/parameters/sd_playbackstamp'
         - $ref: '#/components/parameters/sd_imgleft'
         - $ref: '#/components/parameters/sd_imgright'
         - $ref: '#/components/parameters/sd_imgtop'
@@ -609,6 +885,11 @@ paths:
         - $ref: '#/components/parameters/ipv6dhcp'
         - $ref: '#/components/parameters/ipv6addresstype'
         - $ref: '#/components/parameters/ipv6acceptrouters'
+        - $ref: '#/components/parameters/equalbright'
+        - $ref: '#/components/parameters/equalcolor'
+        - $ref: '#/components/parameters/vertical_alignment'
+        - $ref: '#/components/parameters/piris_ref_channel'
+        - $ref: '#/components/parameters/exp_ref_channel'
       responses:
         '200':
           description: Returns the parameters set in the request.
@@ -621,7 +902,6 @@ paths:
                   - $ref: '#/components/schemas/daynight'
                   - $ref: '#/components/schemas/upscaling'
                   - $ref: '#/components/schemas/channelenable'
-                  - $ref: '#/components/schemas/rotate'
                   - $ref: '#/components/schemas/brightness'
                   - $ref: '#/components/schemas/sharpness'
                   - $ref: '#/components/schemas/saturation'
@@ -647,7 +927,6 @@ paths:
                   - $ref: '#/components/schemas/imgheight'
                   - $ref: '#/components/schemas/imgquality'
                   - $ref: '#/components/schemas/imgres'
-                  - $ref: '#/components/schemas/params'
                   - $ref: '#/components/schemas/kneepoint'
                   - $ref: '#/components/schemas/analoggain'
                   - $ref: '#/components/schemas/maxkneegain'
@@ -656,6 +935,12 @@ paths:
                   - $ref: '#/components/schemas/webserverport'
                   - $ref: '#/components/schemas/admin'
                   - $ref: '#/components/schemas/viewer'
+                  - $ref: '#/components/schemas/maxsensorwidth'
+                  - $ref: '#/components/schemas/maxsensorheight'
+                  - $ref: '#/components/schemas/mdmode'
+                  - $ref: '#/components/schemas/motiondetect'
+                  - $ref: '#/components/schemas/mdtotalzones'
+                  - $ref: '#/components/schemas/auxin'
                   - $ref: '#/components/schemas/auxout'
                   - $ref: '#/components/schemas/cropping'
                   - $ref: '#/components/schemas/1080p_mode'
@@ -680,7 +965,6 @@ paths:
                   - $ref: '#/components/schemas/ratelimit'
                   - $ref: '#/components/schemas/bitrate'
                   - $ref: '#/components/schemas/keyframeinterval'
-                  - $ref: '#/components/schemas/keyframe'
                   - $ref: '#/components/schemas/rtspport'
                   - $ref: '#/components/schemas/spacialfilter'
                   - $ref: '#/components/schemas/name'
@@ -690,6 +974,7 @@ paths:
                   - $ref: '#/components/schemas/gateway'
                   - $ref: '#/components/schemas/webserverport'
                   - $ref: '#/components/schemas/eth_negotiation'
+                  - $ref: '#/components/schemas/features'
                   - $ref: '#/components/schemas/audioinput'
                   - $ref: '#/components/schemas/linein_volume'
                   - $ref: '#/components/schemas/mic_boost'
@@ -703,6 +988,7 @@ paths:
                   - $ref: '#/components/schemas/wbwndwidth'
                   - $ref: '#/components/schemas/wbwndheight'
                   - $ref: '#/components/schemas/ntpserver_ip'
+                  - $ref: '#/components/schemas/enclosure'
                   - $ref: '#/components/schemas/gamma'
                   - $ref: '#/components/schemas/gamma2'
                   - $ref: '#/components/schemas/bandwidthsaving'
@@ -714,6 +1000,9 @@ paths:
                   - $ref: '#/components/schemas/irpos_chan1'
                   - $ref: '#/components/schemas/irpos_chan2'
                   - $ref: '#/components/schemas/snapstream'
+                  - $ref: '#/components/schemas/sensorcount'
+                  - $ref: '#/components/schemas/scaling'
+                  - $ref: '#/components/schemas/scaling_size'
                   - $ref: '#/components/schemas/sd_codec'
                   - $ref: '#/components/schemas/sd_fps'
                   - $ref: '#/components/schemas/sd_recording'
@@ -721,7 +1010,6 @@ paths:
                   - $ref: '#/components/schemas/sd_motionalarm'
                   - $ref: '#/components/schemas/sd_ioalarm'
                   - $ref: '#/components/schemas/sd_stampspan'
-                  - $ref: '#/components/schemas/sd_playbackstamp'
                   - $ref: '#/components/schemas/sd_imgleft'
                   - $ref: '#/components/schemas/sd_imgright'
                   - $ref: '#/components/schemas/sd_imgtop'
@@ -736,6 +1024,11 @@ paths:
                   - $ref: '#/components/schemas/ipv6dhcp'
                   - $ref: '#/components/schemas/ipv6addresstype'
                   - $ref: '#/components/schemas/ipv6acceptrouters'
+                  - $ref: '#/components/schemas/equalbright'
+                  - $ref: '#/components/schemas/equalcolor'
+                  - $ref: '#/components/schemas/vertical_alignment'
+                  - $ref: '#/components/schemas/piris_ref_channel'
+                  - $ref: '#/components/schemas/exp_ref_channel'
   /g711:
     post:
       tags:
@@ -1415,6 +1708,47 @@ components:
       description: Set regular (64) or extended motion detection mode (1024). 4k cameras support motion detection in extended mode either.
       schema:
         type: integer
+      
+    mdzonesize:
+      name: mdzonesize
+      in: query
+      description: Set motion detection zone size.
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 16
+      
+    mdlevelthreshold:
+      name: mdlevelthreshold
+      in: query
+      description: Motion detection zone threshold
+      schema:
+        type: integer
+        minimum: 2
+        maximum: 31
+      
+    mddetail:
+      name: mdlevelthreshold
+      in: query
+      description: Motion detection zone detail
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 255
+      
+    mdprivacymask:
+      name: mdprivacymask
+      in: query
+      description: Motion detection privacy mask
+      schema:
+        type: integer
+      
+    mdresult:
+      name: mdlevelthreshold
+      in: query
+      description: Motion detection zone result
+      schema:
+        type: string
     auxin:
       name: auxin
       in: query
@@ -1460,6 +1794,42 @@ components:
         enum:
           - 'on'
           - 'off'
+    pmaskleft:
+      name: pmaskleft
+      in: query
+      description: |
+        Get, set, or erace a privacy mask block (32 x 32 pixels per block).
+      schema:
+        type: integer
+        minimum: 0
+        maximum: 1023
+    pmaskright:
+      name: pmaskright
+      in: query
+      description: |
+        Get, set, or erace a privacy mask block (32 x 32 pixels per block).
+      schema:
+        type: integer
+        minimum: 0
+        maximum: 1023
+    pmasktop:
+      name: pmasktop
+      in: query
+      description: |
+        Get, set, or erace a privacy mask block (32 x 32 pixels per block).
+      schema:
+        type: integer
+        minimum: 0
+        maximum: 1023
+    pmaskbottom:
+      name: pmaskbottom
+      in: query
+      description: |
+        Get, set, or erace a privacy mask block (32 x 32 pixels per block).
+      schema:
+        type: integer
+        minimum: 0
+        maximum: 1023
     pmaskblock:
       name: pmaskblock
       in: query
@@ -1919,6 +2289,60 @@ components:
         type: integer
         minimum: 0
         maximum: 255
+    equalbright:
+      name: equalbright
+      in: query
+      description: |
+        Equalize brightness across sensors in a multisensor camera.
+      schema:
+        type: string
+        enum:
+          - 'on'
+          - 'off'
+    equalcolor:
+      name: equalcolor
+      in: query
+      description: |
+        Equalize color across sensors in a multisensor camera.
+      schema:
+        type: string
+        enum:
+          - 'on'
+          - 'off'
+    vertical_alignment:
+      name: vertical_alignment
+      in: query
+      description: |
+        Align sensors in a multisensor camera.
+      schema:
+        type: string
+        enum:
+          - 'on'
+          - 'off'
+    vertical_shift:
+      name: vertical_shift
+      in: query
+      description: |
+        Shift sensors vertically.
+      schema:
+        type: integer
+    piris_ref_channel:
+      name: piris_ref_channel
+      in: query
+      description: |
+        Set the P-iris reference channel for a multi-channel camera.
+      schema:
+        type: integer
+    exp_ref_channel:
+      name: exp_ref_channel
+      in: query
+      description: |
+        Set the WDR reference channel for a multi-channel camera.
+      schema:
+        oneOf:
+          - type: integer
+          - type: string
+            enum: [off]
     ir:
       name: ir
       in: query
@@ -2822,6 +3246,47 @@ components:
       schema:
         type: integer
       allowEmptyValue: true
+    mdzonesize:
+      name: mdzonesize
+      in: query
+      description: Set motion detection zone size.
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 16
+      allowEmptyValue: true
+    mdlevelthreshold:
+      name: mdlevelthreshold
+      in: query
+      description: Motion detection zone threshold
+      schema:
+        type: integer
+        minimum: 2
+        maximum: 31
+      allowEmptyValue: true
+    mddetail:
+      name: mdlevelthreshold
+      in: query
+      description: Motion detection zone detail
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 255
+      allowEmptyValue: true
+    mdprivacymask:
+      name: mdprivacymask
+      in: query
+      description: Motion detection privacy mask
+      schema:
+        type: integer
+      allowEmptyValue: true
+    mdresult:
+      name: mdlevelthreshold
+      in: query
+      description: Motion detection zone result
+      schema:
+        type: boolean
+      allowEmptyValue: true
     auxin:
       name: auxin
       in: query
@@ -2871,6 +3336,46 @@ components:
         enum:
           - 'on'
           - 'off'
+      allowEmptyValue: true
+    pmaskleft:
+      name: pmaskleft
+      in: query
+      description: |
+        Get, set, or erace a privacy mask block (32 x 32 pixels per block).
+      schema:
+        type: integer
+        minimum: 0
+        maximum: 1023
+      allowEmptyValue: true
+    pmaskright:
+      name: pmaskright
+      in: query
+      description: |
+        Get, set, or erace a privacy mask block (32 x 32 pixels per block).
+      schema:
+        type: integer
+        minimum: 0
+        maximum: 1023
+      allowEmptyValue: true
+    pmasktop:
+      name: pmasktop
+      in: query
+      description: |
+        Get, set, or erace a privacy mask block (32 x 32 pixels per block).
+      schema:
+        type: integer
+        minimum: 0
+        maximum: 1023
+      allowEmptyValue: true
+    pmaskbottom:
+      name: pmaskbottom
+      in: query
+      description: |
+        Get, set, or erace a privacy mask block (32 x 32 pixels per block).
+      schema:
+        type: integer
+        minimum: 0
+        maximum: 1023
       allowEmptyValue: true
     pmaskblock:
       name: pmaskblock
@@ -3363,6 +3868,66 @@ components:
         type: integer
         minimum: 0
         maximum: 255
+      allowEmptyValue: true
+    equalbright:
+      name: equalbright
+      in: query
+      description: |
+        Equalize brightness across sensors in a multisensor camera.
+      schema:
+        type: string
+        enum:
+          - 'on'
+          - 'off'
+      allowEmptyValue: true
+    equalcolor:
+      name: equalcolor
+      in: query
+      description: |
+        Equalize color across sensors in a multisensor camera.
+      schema:
+        type: string
+        enum:
+          - 'on'
+          - 'off'
+      allowEmptyValue: true
+    vertical_alignment:
+      name: vertical_alignment
+      in: query
+      description: |
+        Align sensors in a multisensor camera.
+      schema:
+        type: string
+        enum:
+          - 'on'
+          - 'off'
+      allowEmptyValue: true
+    vertical_shift:
+      name: vertical_shift
+      in: query
+      description: |
+        Shift sensors vertically.
+      schema:
+        type: integer
+      allowEmptyValue: true
+    piris_ref_channel:
+      name: piris_ref_channel
+      in: query
+      description: |
+        Set the P-iris reference channel for a multi-channel camera.
+      schema:
+        type: integer
+      allowEmptyValue: true
+    exp_ref_channel:
+      name: exp_ref_channel
+      in: query
+      description: |
+        Set the exposure reference for a multi-channel camera.
+      schema:
+        oneOf:
+          - type: integer
+          - type: string
+            enum: [off]
       allowEmptyValue: true
     ir:
       name: ir
