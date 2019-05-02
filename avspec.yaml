@@ -181,7 +181,6 @@ paths:
       description: Pull JPEG frames individually from the camera.
       operationId: multijpeg
       parameters:
-        - name: channel
         - $ref: '#/components/parameters/res'
         - $ref: '#/components/parameters/x0'
         - $ref: '#/components/parameters/y0'
@@ -288,7 +287,16 @@ paths:
                 enum:
                   - '--fbdr'
                 example: '--fbdr/r/n'
-  '/get{channel}':
+  /get{channel}:
+    parameters:
+      - name: channel
+        description: The ID of the channel you want to get or set information for.
+        in: path
+        required: true
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 4
     get:
       tags:
         - Configuration
@@ -296,13 +304,6 @@ paths:
       description: |
         Return settings for a single channel in a multi-sensor camera. In general, you should use only one query parameter at a time.
       parameters:
-        - name: channel
-          description: The ID of the channel you want to return information for.
-          in: path
-          schema:
-            type: integer
-            minimum: 1
-            maximum: 4
         - $ref: '#/components/parameters/brightness'
         - $ref: '#/components/parameters/sharpness'
         - $ref: '#/components/parameters/saturation'
@@ -335,45 +336,83 @@ paths:
         - $ref: '#/components/parameters/rtpport'
         - $ref: '#/components/parameters/sapip'
         - $ref: '#/components/parameters/vertical_shift'
+        - $ref: '#/components/parameters/pan'
+        - $ref: '#/components/parameters/tilt'
+        - $ref: '#/components/parameters/zoom'
+        - $ref: '#/components/parameters/ptz'
+        - $ref: '#/components/parameters/switcher'
       responses:
         '200':
           description: Returns the parameters specified in the query.
           content:
             text/plain:
               schema:
-                oneOf:
-                  - $ref: '#/components/schemas/brightness'
-                  - $ref: '#/components/schemas/sharpness'
-                  - $ref: '#/components/schemas/saturation'
-                  - $ref: '#/components/schemas/blue'
-                  - $ref: '#/components/schemas/red'
-                  - $ref: '#/components/schemas/illum'
-                  - $ref: '#/components/schemas/freq'
-                  - $ref: '#/components/schemas/lowlight'
-                  - $ref: '#/components/schemas/shortexposures'
-                  - $ref: '#/components/schemas/autoexp'
-                  - $ref: '#/components/schemas/exposure'
-                  - $ref: '#/components/schemas/kneepoint'
-                  - $ref: '#/components/schemas/analoggain'
-                  - $ref: '#/components/schemas/maxkneegain'
-                  - $ref: '#/components/schemas/maxexptime'
-                  - $ref: '#/components/schemas/maxdigitalgain'
-                  - $ref: '#/components/schemas/mdmode'
-                  - $ref: '#/components/schemas/motiondetect'
-                  - $ref: '#/components/schemas/mdtotalzones'
-                  - $ref: '#/components/schemas/mdlevelthreshold'
-                  - $ref: '#/components/schemas/mddetail'
-                  - $ref: '#/components/schemas/mdprivacymask'
-                  - $ref: '#/components/schemas/mdresult'
-                  - $ref: '#/components/schemas/pmask'
-                  - $ref: '#/components/schemas/pmaskleft'
-                  - $ref: '#/components/schemas/pmasktop'
-                  - $ref: '#/components/schemas/pmaskright'
-                  - $ref: '#/components/schemas/pmaskbottom'
-                  - $ref: '#/components/schemas/streamip'
-                  - $ref: '#/components/schemas/rtpport'
-                  - $ref: '#/components/schemas/sapip'
-                  - $ref: '#/components/schemas/vertical_shift'
+                type: object
+                properties:
+                  brightness:
+                    $ref: '#/components/schemas/brightness'
+                  sharpness:
+                    $ref: '#/components/schemas/sharpness'
+                  saturation:
+                    $ref: '#/components/schemas/saturation'
+                  blue:
+                    $ref: '#/components/schemas/blue'
+                  red:
+                    $ref: '#/components/schemas/red'
+                  illum:
+                    $ref: '#/components/schemas/illum'
+                  freq:
+                    $ref: '#/components/schemas/freq'
+                  lowlight:
+                    $ref: '#/components/schemas/lowlight'
+                  shortexposures:
+                    $ref: '#/components/schemas/shortexposures'
+                  autoexp:
+                    $ref: '#/components/schemas/autoexp'
+                  exposure:
+                    $ref: '#/components/schemas/exposure'
+                  kneepoint:
+                    $ref: '#/components/schemas/kneepoint'
+                  analoggain:
+                    $ref: '#/components/schemas/analoggain'
+                  maxkneegain:
+                    $ref: '#/components/schemas/maxkneegain'
+                  maxexptime:
+                    $ref: '#/components/schemas/maxexptime'
+                  maxdigitalgain:
+                    $ref: '#/components/schemas/maxdigitalgain'
+                  mdmode:
+                    $ref: '#/components/schemas/mdmode'
+                  motiondetect:
+                    $ref: '#/components/schemas/motiondetect'
+                  mdtotalzones:
+                    $ref: '#/components/schemas/mdtotalzones'
+                  mdlevelthreshold:
+                    $ref: '#/components/schemas/mdlevelthreshold'
+                  mddetail:
+                    $ref: '#/components/schemas/mddetail'
+                  mdprivacymask:
+                    $ref: '#/components/schemas/mdprivacymask'
+                  mdresult:
+                    $ref: '#/components/schemas/mdresult'
+                  pmask:
+                    $ref: '#/components/schemas/pmask'
+                  pmaskleft:
+                    $ref: '#/components/schemas/pmaskleft'
+                  pmasktop:
+                    $ref: '#/components/schemas/pmasktop'
+                  pmaskright:
+                    $ref: '#/components/schemas/pmaskright'
+                  pmaskbottom:
+                    $ref: '#/components/schemas/pmaskbottom'
+                  streamip:
+                    $ref: '#/components/schemas/streamip'
+                  rtpport:
+                    $ref: '#/components/schemas/rtpport'
+                  sapip:
+                    $ref: '#/components/schemas/sapip'
+                  vertical_shift:
+                    $ref: '#/components/schemas/vertical_shift'
     post:
       tags:
         - Configuration
@@ -381,13 +420,6 @@ paths:
       description: |
         Set parameters for a single channel in a multi-sensor camera. In general, you should use only one query parameter at a time.
       parameters:
-        - name: channel
-          description: The ID of the channel you want to return information for.
-          in: path
-          schema:
-            type: integer
-            minimum: 1
-            maximum: 4
         - $ref: '#/components/parameters/brightness'
         - $ref: '#/components/parameters/sharpness'
         - $ref: '#/components/parameters/saturation'
@@ -420,45 +452,82 @@ paths:
         - $ref: '#/components/parameters/rtpport'
         - $ref: '#/components/parameters/sapip'
         - $ref: '#/components/parameters/vertical_shift'
+        - $ref: '#/components/parameters/pan'
+        - $ref: '#/components/parameters/tilt'
+        - $ref: '#/components/parameters/zoom'
+        - $ref: '#/components/parameters/ptz'
       responses:
         '200':
           description: Returns the parameters specified in the query.
           content:
             text/plain:
               schema:
-                oneOf:
-                  - $ref: '#/components/schemas/brightness'
-                  - $ref: '#/components/schemas/sharpness'
-                  - $ref: '#/components/schemas/saturation'
-                  - $ref: '#/components/schemas/blue'
-                  - $ref: '#/components/schemas/red'
-                  - $ref: '#/components/schemas/illum'
-                  - $ref: '#/components/schemas/freq'
-                  - $ref: '#/components/schemas/lowlight'
-                  - $ref: '#/components/schemas/shortexposures'
-                  - $ref: '#/components/schemas/autoexp'
-                  - $ref: '#/components/schemas/exposure'
-                  - $ref: '#/components/schemas/kneepoint'
-                  - $ref: '#/components/schemas/analoggain'
-                  - $ref: '#/components/schemas/maxkneegain'
-                  - $ref: '#/components/schemas/maxexptime'
-                  - $ref: '#/components/schemas/maxdigitalgain'
-                  - $ref: '#/components/schemas/mdmode'
-                  - $ref: '#/components/schemas/motiondetect'
-                  - $ref: '#/components/schemas/mdtotalzones'
-                  - $ref: '#/components/schemas/mdlevelthreshold'
-                  - $ref: '#/components/schemas/mddetail'
-                  - $ref: '#/components/schemas/mdprivacymask'
-                  - $ref: '#/components/schemas/mdresult'
-                  - $ref: '#/components/schemas/pmask'
-                  - $ref: '#/components/schemas/pmaskleft'
-                  - $ref: '#/components/schemas/pmasktop'
-                  - $ref: '#/components/schemas/pmaskright'
-                  - $ref: '#/components/schemas/pmaskbottom'
-                  - $ref: '#/components/schemas/streamip'
-                  - $ref: '#/components/schemas/rtpport'
-                  - $ref: '#/components/schemas/sapip'
-                  - $ref: '#/components/schemas/vertical_shift'
+                type: object
+                properties:
+                  brightness:
+                    $ref: '#/components/schemas/brightness'
+                  sharpness:
+                    $ref: '#/components/schemas/sharpness'
+                  saturation:
+                    $ref: '#/components/schemas/saturation'
+                  blue:
+                    $ref: '#/components/schemas/blue'
+                  red:
+                    $ref: '#/components/schemas/red'
+                  illum:
+                    $ref: '#/components/schemas/illum'
+                  freq:
+                    $ref: '#/components/schemas/freq'
+                  lowlight:
+                    $ref: '#/components/schemas/lowlight'
+                  shortexposures:
+                    $ref: '#/components/schemas/shortexposures'
+                  autoexp:
+                    $ref: '#/components/schemas/autoexp'
+                  exposure:
+                    $ref: '#/components/schemas/exposure'
+                  kneepoint:
+                    $ref: '#/components/schemas/kneepoint'
+                  analoggain:
+                    $ref: '#/components/schemas/analoggain'
+                  maxkneegain:
+                    $ref: '#/components/schemas/maxkneegain'
+                  maxexptime:
+                    $ref: '#/components/schemas/maxexptime'
+                  maxdigitalgain:
+                    $ref: '#/components/schemas/maxdigitalgain'
+                  mdmode:
+                    $ref: '#/components/schemas/mdmode'
+                  motiondetect:
+                    $ref: '#/components/schemas/motiondetect'
+                  mdtotalzones:
+                    $ref: '#/components/schemas/mdtotalzones'
+                  mdlevelthreshold:
+                    $ref: '#/components/schemas/mdlevelthreshold'
+                  mddetail:
+                    $ref: '#/components/schemas/mddetail'
+                  mdprivacymask:
+                    $ref: '#/components/schemas/mdprivacymask'
+                  mdresult:
+                    $ref: '#/components/schemas/mdresult'
+                  pmask:
+                    $ref: '#/components/schemas/pmask'
+                  pmaskleft:
+                    $ref: '#/components/schemas/pmaskleft'
+                  pmasktop:
+                    $ref: '#/components/schemas/pmasktop'
+                  pmaskright:
+                    $ref: '#/components/schemas/pmaskright'
+                  pmaskbottom:
+                    $ref: '#/components/schemas/pmaskbottom'
+                  streamip:
+                    $ref: '#/components/schemas/streamip'
+                  rtpport:
+                    $ref: '#/components/schemas/rtpport'
+                  sapip:
+                    $ref: '#/components/schemas/sapip'
+                  vertical_shift:
+                    $ref: '#/components/schemas/vertical_shift'
   /get:
     get:
       tags:
@@ -548,7 +617,6 @@ paths:
         - $ref: '#/components/parameters/ip'
         - $ref: '#/components/parameters/subnetmask'
         - $ref: '#/components/parameters/gateway'
-        - $ref: '#/components/parameters/webserverport'
         - $ref: '#/components/parameters/eth_negotiation'
         - $ref: '#/components/parameters/features'
         - $ref: '#/components/parameters/audioinput'
@@ -606,152 +674,294 @@ paths:
         - $ref: '#/components/parameters/vertical_alignment'
         - $ref: '#/components/parameters/piris_ref_channel'
         - $ref: '#/components/parameters/exp_ref_channel'
+        - $ref: '#/components/parameters/pan'
+        - $ref: '#/components/parameters/tilt'
+        - $ref: '#/components/parameters/ptz'
+        - $ref: '#/components/parameters/switcher'
       responses:
         '200':
           description: Returns the parameters specified in the query.
           content:
             text/plain:
               schema:
-                oneOf:
-                  - $ref: '#/components/schemas/day_binning'
-                  - $ref: '#/components/schemas/night_binning'
-                  - $ref: '#/components/schemas/daynight'
-                  - $ref: '#/components/schemas/upscaling'
-                  - $ref: '#/components/schemas/channelenable'
-                  - $ref: '#/components/schemas/brightness'
-                  - $ref: '#/components/schemas/sharpness'
-                  - $ref: '#/components/schemas/saturation'
-                  - $ref: '#/components/schemas/blue'
-                  - $ref: '#/components/schemas/red'
-                  - $ref: '#/components/schemas/illum'
-                  - $ref: '#/components/schemas/freq'
-                  - $ref: '#/components/schemas/lowlight'
-                  - $ref: '#/components/schemas/shortexposures'
-                  - $ref: '#/components/schemas/autoexp'
-                  - $ref: '#/components/schemas/exposure'
-                  - $ref: '#/components/schemas/expwndleft'
-                  - $ref: '#/components/schemas/expwndtop'
-                  - $ref: '#/components/schemas/expwndwidth'
-                  - $ref: '#/components/schemas/expwndheight'
-                  - $ref: '#/components/schemas/sensorleft'
-                  - $ref: '#/components/schemas/sensortop'
-                  - $ref: '#/components/schemas/sensorwidth'
-                  - $ref: '#/components/schemas/sensorheight'
-                  - $ref: '#/components/schemas/imgleft'
-                  - $ref: '#/components/schemas/imgtop'
-                  - $ref: '#/components/schemas/imgwidth'
-                  - $ref: '#/components/schemas/imgheight'
-                  - $ref: '#/components/schemas/imgquality'
-                  - $ref: '#/components/schemas/imgres'
-                  - $ref: '#/components/schemas/mac'
-                  - $ref: '#/components/schemas/model'
-                  - $ref: '#/components/schemas/fwversion'
-                  - $ref: '#/components/schemas/procversion'
-                  - $ref: '#/components/schemas/netversion'
-                  - $ref: '#/components/schemas/revision'
-                  - $ref: '#/components/schemas/kneepoint'
-                  - $ref: '#/components/schemas/analoggain'
-                  - $ref: '#/components/schemas/maxkneegain'
-                  - $ref: '#/components/schemas/maxexptime'
-                  - $ref: '#/components/schemas/maxdigitalgain'
-                  - $ref: '#/components/schemas/webserverport'
-                  - $ref: '#/components/schemas/admin'
-                  - $ref: '#/components/schemas/viewer'
-                  - $ref: '#/components/schemas/maxsensorwidth'
-                  - $ref: '#/components/schemas/maxsensorheight'
-                  - $ref: '#/components/schemas/mdmode'
-                  - $ref: '#/components/schemas/motiondetect'
-                  - $ref: '#/components/schemas/mdtotalzones'
-                  - $ref: '#/components/schemas/auxin'
-                  - $ref: '#/components/schemas/auxout'
-                  - $ref: '#/components/schemas/cropping'
-                  - $ref: '#/components/schemas/1080p_mode'
-                  - $ref: '#/components/schemas/pmask'
-                  - $ref: '#/components/schemas/focus'
-                  - $ref: '#/components/schemas/zoom'
-                  - $ref: '#/components/schemas/focusleft'
-                  - $ref: '#/components/schemas/focustop'
-                  - $ref: '#/components/schemas/focusright'
-                  - $ref: '#/components/schemas/focusbottom'
-                  - $ref: '#/components/schemas/focuswindow'
-                  - $ref: '#/components/schemas/af_dn'
-                  - $ref: '#/components/schemas/af_zoom'
-                  - $ref: '#/components/schemas/casino_mode'
-                  - $ref: '#/components/schemas/netopt'
-                  - $ref: '#/components/schemas/multicast_rec'
-                  - $ref: '#/components/schemas/en_multicast'
-                  - $ref: '#/components/schemas/fps'
-                  - $ref: '#/components/schemas/qp'
-                  - $ref: '#/components/schemas/qp_max'
-                  - $ref: '#/components/schemas/ratelimit_mode'
-                  - $ref: '#/components/schemas/ratelimit'
-                  - $ref: '#/components/schemas/bitrate'
-                  - $ref: '#/components/schemas/keyframeinterval'
-                  - $ref: '#/components/schemas/rtspport'
-                  - $ref: '#/components/schemas/spacialfilter'
-                  - $ref: '#/components/schemas/name'
-                  - $ref: '#/components/schemas/mtu'
-                  - $ref: '#/components/schemas/ip'
-                  - $ref: '#/components/schemas/subnetmask'
-                  - $ref: '#/components/schemas/gateway'
-                  - $ref: '#/components/schemas/webserverport'
-                  - $ref: '#/components/schemas/eth_negotiation'
-                  - $ref: '#/components/schemas/features'
-                  - $ref: '#/components/schemas/audioinput'
-                  - $ref: '#/components/schemas/linein_volume'
-                  - $ref: '#/components/schemas/mic_boost'
-                  - $ref: '#/components/schemas/piris'
-                  - $ref: '#/components/schemas/pirispos'
-                  - $ref: '#/components/schemas/ir'
-                  - $ref: '#/components/schemas/make'
-                  - $ref: '#/components/schemas/white_balance'
-                  - $ref: '#/components/schemas/wbwndctrl'
-                  - $ref: '#/components/schemas/wbwndleft'
-                  - $ref: '#/components/schemas/wbwndtop'
-                  - $ref: '#/components/schemas/wbwndwidth'
-                  - $ref: '#/components/schemas/wbwndheight'
-                  - $ref: '#/components/schemas/ntpserver_ip'
-                  - $ref: '#/components/schemas/enclosure'
-                  - $ref: '#/components/schemas/gamma'
-                  - $ref: '#/components/schemas/gamma2'
-                  - $ref: '#/components/schemas/bandwidthsaving'
-                  - $ref: '#/components/schemas/lowpower'
-                  - $ref: '#/components/schemas/motion_compensation'
-                  - $ref: '#/components/schemas/adjustable_ir'
-                  - $ref: '#/components/schemas/irwidepos'
-                  - $ref: '#/components/schemas/irtelepos'
-                  - $ref: '#/components/schemas/irpos_chan1'
-                  - $ref: '#/components/schemas/irpos_chan2'
-                  - $ref: '#/components/schemas/snapstream'
-                  - $ref: '#/components/schemas/sensorcount'
-                  - $ref: '#/components/schemas/scaling'
-                  - $ref: '#/components/schemas/scaling_size'
-                  - $ref: '#/components/schemas/sd_codec'
-                  - $ref: '#/components/schemas/sd_fps'
-                  - $ref: '#/components/schemas/sd_recording'
-                  - $ref: '#/components/schemas/sd_networkfail'
-                  - $ref: '#/components/schemas/sd_motionalarm'
-                  - $ref: '#/components/schemas/sd_ioalarm'
-                  - $ref: '#/components/schemas/sd_stampspan'
-                  - $ref: '#/components/schemas/sd_imgleft'
-                  - $ref: '#/components/schemas/sd_imgright'
-                  - $ref: '#/components/schemas/sd_imgtop'
-                  - $ref: '#/components/schemas/sd_imgbottom'
-                  - $ref: '#/components/schemas/sd_imgres'
-                  - $ref: '#/components/schemas/qos_enabled'
-                  - $ref: '#/components/schemas/qos_video'
-                  - $ref: '#/components/schemas/qos_default'
-                  - $ref: '#/components/schemas/ipv6enabled'
-                  - $ref: '#/components/schemas/ipv6address'
-                  - $ref: '#/components/schemas/ipv6prefixlen'
-                  - $ref: '#/components/schemas/ipv6dhcp'
-                  - $ref: '#/components/schemas/ipv6addresstype'
-                  - $ref: '#/components/schemas/ipv6acceptrouters'
-                  - $ref: '#/components/schemas/equalbright'
-                  - $ref: '#/components/schemas/equalcolor'
-                  - $ref: '#/components/schemas/vertical_alignment'
-                  - $ref: '#/components/schemas/piris_ref_channel'
-                  - $ref: '#/components/schemas/exp_ref_channel'
+                type: object
+                properties:
+                  enclosure:
+                    $ref: '#/components/schemas/enclosure'
+                  make:
+                    $ref: '#/components/schemas/make'
+                  mac:
+                    $ref: '#/components/schemas/mac'
+                  model:
+                    $ref: '#/components/schemas/model'
+                  fwversion:
+                    $ref: '#/components/schemas/fwversion'
+                  procversion:
+                    $ref: '#/components/schemas/procversion'
+                  netversion:
+                    $ref: '#/components/schemas/netversion'
+                  revision:
+                    $ref: '#/components/schemas/revision'
+                  day_binning:
+                    $ref: '#/components/schemas/day_binning'
+                  night_binning:
+                    $ref: '#/components/schemas/night_binning'
+                  daynight:
+                    $ref: '#/components/schemas/daynight'
+                  upscaling:
+                    $ref: '#/components/schemas/upscaling'
+                  channelenable:
+                    $ref: '#/components/schemas/channelenable'
+                  brightness:
+                    $ref: '#/components/schemas/brightness'
+                  sharpness:
+                    $ref: '#/components/schemas/sharpness'
+                  saturation:
+                    $ref: '#/components/schemas/saturation'
+                  blue:
+                    $ref: '#/components/schemas/blue'
+                  red:
+                    $ref: '#/components/schemas/red'
+                  illum:
+                    $ref: '#/components/schemas/illum'
+                  freq:
+                    $ref: '#/components/schemas/freq'
+                  lowlight:
+                    $ref: '#/components/schemas/lowlight'
+                  shortexposures:
+                    $ref: '#/components/schemas/shortexposures'
+                  autoexp:
+                    $ref: '#/components/schemas/autoexp'
+                  exposure:
+                    $ref: '#/components/schemas/exposure'
+                  expwndleft:
+                    $ref: '#/components/schemas/expwndleft'
+                  expwndtop:
+                    $ref: '#/components/schemas/expwndtop'
+                  expwndwidth:
+                    $ref: '#/components/schemas/expwndwidth'
+                  expwndheight:
+                    $ref: '#/components/schemas/expwndheight'
+                  sensorleft:
+                    $ref: '#/components/schemas/sensorleft'
+                  sensortop:
+                    $ref: '#/components/schemas/sensortop'
+                  sensorwidth:
+                    $ref: '#/components/schemas/sensorwidth'
+                  sensorheight:
+                    $ref: '#/components/schemas/sensorheight'
+                  imgleft:
+                    $ref: '#/components/schemas/imgleft'
+                  imgtop:
+                    $ref: '#/components/schemas/imgtop'
+                  imgwidth:
+                    $ref: '#/components/schemas/imgwidth'
+                  imgheight:
+                    $ref: '#/components/schemas/imgheight'
+                  imgquality:
+                    $ref: '#/components/schemas/imgquality'
+                  imgres:
+                    $ref: '#/components/schemas/imgres'
+                  kneepoint:
+                    $ref: '#/components/schemas/kneepoint'
+                  analoggain:
+                    $ref: '#/components/schemas/analoggain'
+                  maxkneegain:
+                    $ref: '#/components/schemas/maxkneegain'
+                  maxexptime:
+                    $ref: '#/components/schemas/maxexptime'
+                  maxdigitalgain:
+                    $ref: '#/components/schemas/maxdigitalgain'
+                  webserverport:
+                    $ref: '#/components/schemas/webserverport'
+                  admin:
+                    $ref: '#/components/schemas/admin'
+                  viewer:
+                    $ref: '#/components/schemas/viewer'
+                  maxsensorwidth:
+                    $ref: '#/components/schemas/maxsensorwidth'
+                  maxsensorheight:
+                    $ref: '#/components/schemas/maxsensorheight'
+                  mdmode:
+                    $ref: '#/components/schemas/mdmode'
+                  motiondetect:
+                    $ref: '#/components/schemas/motiondetect'
+                  mdtotalzones:
+                    $ref: '#/components/schemas/mdtotalzones'
+                  auxin:
+                    $ref: '#/components/schemas/auxin'
+                  auxout:
+                    $ref: '#/components/schemas/auxout'
+                  cropping:
+                    $ref: '#/components/schemas/cropping'
+                  1080p_mode:
+                    $ref: '#/components/schemas/1080p_mode'
+                  pmask:
+                    $ref: '#/components/schemas/pmask'
+                  focus:
+                    $ref: '#/components/schemas/focus'
+                  zoom:
+                    $ref: '#/components/schemas/zoom'
+                  focusleft:
+                    $ref: '#/components/schemas/focusleft'
+                  focustop:
+                    $ref: '#/components/schemas/focustop'
+                  focusright:
+                    $ref: '#/components/schemas/focusright'
+                  focusbottom:
+                    $ref: '#/components/schemas/focusbottom'
+                  focuswindow:
+                    $ref: '#/components/schemas/focuswindow'
+                  af_dn:
+                    $ref: '#/components/schemas/af_dn'
+                  af_zoom:
+                    $ref: '#/components/schemas/af_zoom'
+                  casino_mode:
+                    $ref: '#/components/schemas/casino_mode'
+                  netopt:
+                    $ref: '#/components/schemas/netopt'
+                  multicast_rec:
+                    $ref: '#/components/schemas/multicast_rec'
+                  en_multicast:
+                    $ref: '#/components/schemas/en_multicast'
+                  fps:
+                    $ref: '#/components/schemas/fps'
+                  qp:
+                    $ref: '#/components/schemas/qp'
+                  qp_max:
+                    $ref: '#/components/schemas/qp_max'
+                  ratelimit_mode:
+                    $ref: '#/components/schemas/ratelimit_mode'
+                  ratelimit:
+                    $ref: '#/components/schemas/ratelimit'
+                  bitrate:
+                    $ref: '#/components/schemas/bitrate'
+                  keyframeinterval:
+                    $ref: '#/components/schemas/keyframeinterval'
+                  rtspport:
+                    $ref: '#/components/schemas/rtspport'
+                  spacialfilter:
+                    $ref: '#/components/schemas/spacialfilter'
+                  name:
+                    $ref: '#/components/schemas/name'
+                  mtu:
+                    $ref: '#/components/schemas/mtu'
+                  ip:
+                    $ref: '#/components/schemas/ip'
+                  subnetmask:
+                    $ref: '#/components/schemas/subnetmask'
+                  gateway:
+                    $ref: '#/components/schemas/gateway'
+                  eth_negotiation:
+                    $ref: '#/components/schemas/eth_negotiation'
+                  features:
+                    $ref: '#/components/schemas/features'
+                  audioinput:
+                    $ref: '#/components/schemas/audioinput'
+                  linein_volume:
+                    $ref: '#/components/schemas/linein_volume'
+                  mic_boost:
+                    $ref: '#/components/schemas/mic_boost'
+                  piris:
+                    $ref: '#/components/schemas/piris'
+                  pirispos:
+                    $ref: '#/components/schemas/pirispos'
+                  ir:
+                    $ref: '#/components/schemas/ir'
+                  white_balance:
+                    $ref: '#/components/schemas/white_balance'
+                  wbwndctrl:
+                    $ref: '#/components/schemas/wbwndctrl'
+                  wbwndleft:
+                    $ref: '#/components/schemas/wbwndleft'
+                  wbwndtop:
+                    $ref: '#/components/schemas/wbwndtop'
+                  wbwndwidth:
+                    $ref: '#/components/schemas/wbwndwidth'
+                  wbwndheight:
+                    $ref: '#/components/schemas/wbwndheight'
+                  ntpserver_ip:
+                    $ref: '#/components/schemas/ntpserver_ip'
+                  gamma:
+                    $ref: '#/components/schemas/gamma'
+                  gamma2:
+                    $ref: '#/components/schemas/gamma2'
+                  bandwidthsaving:
+                    $ref: '#/components/schemas/bandwidthsaving'
+                  lowpower:
+                    $ref: '#/components/schemas/lowpower'
+                  motion_compensation:
+                    $ref: '#/components/schemas/motion_compensation'
+                  adjustable_ir:
+                    $ref: '#/components/schemas/adjustable_ir'
+                  irwidepos:
+                    $ref: '#/components/schemas/irwidepos'
+                  irtelepos:
+                    $ref: '#/components/schemas/irtelepos'
+                  irpos_chan1:
+                    $ref: '#/components/schemas/irpos_chan1'
+                  irpos_chan2:
+                    $ref: '#/components/schemas/irpos_chan2'
+                  snapstream:
+                    $ref: '#/components/schemas/snapstream'
+                  sensorcount:
+                    $ref: '#/components/schemas/sensorcount'
+                  scaling:
+                    $ref: '#/components/schemas/scaling'
+                  scaling_size:
+                    $ref: '#/components/schemas/scaling_size'
+                  sd_codec:
+                    $ref: '#/components/schemas/sd_codec'
+                  sd_fps:
+                    $ref: '#/components/schemas/sd_fps'
+                  sd_recording:
+                    $ref: '#/components/schemas/sd_recording'
+                  sd_networkfail:
+                    $ref: '#/components/schemas/sd_networkfail'
+                  sd_motionalarm:
+                    $ref: '#/components/schemas/sd_motionalarm'
+                  sd_ioalarm:
+                    $ref: '#/components/schemas/sd_ioalarm'
+                  sd_stampspan:
+                    $ref: '#/components/schemas/sd_stampspan'
+                  sd_imgleft:
+                    $ref: '#/components/schemas/sd_imgleft'
+                  sd_imgright:
+                    $ref: '#/components/schemas/sd_imgright'
+                  sd_imgtop:
+                    $ref: '#/components/schemas/sd_imgtop'
+                  sd_imgbottom:
+                    $ref: '#/components/schemas/sd_imgbottom'
+                  sd_imgres:
+                    $ref: '#/components/schemas/sd_imgres'
+                  qos_enabled:
+                    $ref: '#/components/schemas/qos_enabled'
+                  qos_video:
+                    $ref: '#/components/schemas/qos_video'
+                  qos_default:
+                    $ref: '#/components/schemas/qos_default'
+                  ipv6enabled:
+                    $ref: '#/components/schemas/ipv6enabled'
+                  ipv6address:
+                    $ref: '#/components/schemas/ipv6address'
+                  ipv6prefixlen:
+                    $ref: '#/components/schemas/ipv6prefixlen'
+                  ipv6dhcp:
+                    $ref: '#/components/schemas/ipv6dhcp'
+                  ipv6addresstype:
+                    $ref: '#/components/schemas/ipv6addresstype'
+                  ipv6acceptrouters:
+                    $ref: '#/components/schemas/ipv6acceptrouters'
+                  equalbright:
+                    $ref: '#/components/schemas/equalbright'
+                  equalcolor:
+                    $ref: '#/components/schemas/equalcolor'
+                  vertical_alignment:
+                    $ref: '#/components/schemas/vertical_alignment'
+                  piris_ref_channel:
+                    $ref: '#/components/schemas/piris_ref_channel'
+                  exp_ref_channel:
+                    $ref: '#/components/schemas/exp_ref_channel'
   /set:
     post:
       summary: Set Camera Settings
@@ -794,7 +1004,6 @@ paths:
         - $ref: '#/components/parameters/maxkneegain'
         - $ref: '#/components/parameters/maxexptime'
         - $ref: '#/components/parameters/maxdigitalgain'
-        - $ref: '#/components/parameters/webserverport'
         - $ref: '#/components/parameters/admin'
         - $ref: '#/components/parameters/viewer'
         - $ref: '#/components/parameters/maxsensorwidth'
@@ -890,145 +1099,279 @@ paths:
         - $ref: '#/components/parameters/vertical_alignment'
         - $ref: '#/components/parameters/piris_ref_channel'
         - $ref: '#/components/parameters/exp_ref_channel'
+        - $ref: '#/components/parameters/pan'
+        - $ref: '#/components/parameters/tilt'
+        - $ref: '#/components/parameters/ptz'
       responses:
         '200':
           description: Returns the parameters set in the request.
           content:
             text/plain:
               schema:
-                oneOf:
-                  - $ref: '#/components/schemas/day_binning'
-                  - $ref: '#/components/schemas/night_binning'
-                  - $ref: '#/components/schemas/daynight'
-                  - $ref: '#/components/schemas/upscaling'
-                  - $ref: '#/components/schemas/channelenable'
-                  - $ref: '#/components/schemas/brightness'
-                  - $ref: '#/components/schemas/sharpness'
-                  - $ref: '#/components/schemas/saturation'
-                  - $ref: '#/components/schemas/blue'
-                  - $ref: '#/components/schemas/red'
-                  - $ref: '#/components/schemas/illum'
-                  - $ref: '#/components/schemas/freq'
-                  - $ref: '#/components/schemas/lowlight'
-                  - $ref: '#/components/schemas/shortexposures'
-                  - $ref: '#/components/schemas/autoexp'
-                  - $ref: '#/components/schemas/exposure'
-                  - $ref: '#/components/schemas/expwndleft'
-                  - $ref: '#/components/schemas/expwndtop'
-                  - $ref: '#/components/schemas/expwndwidth'
-                  - $ref: '#/components/schemas/expwndheight'
-                  - $ref: '#/components/schemas/sensorleft'
-                  - $ref: '#/components/schemas/sensortop'
-                  - $ref: '#/components/schemas/sensorwidth'
-                  - $ref: '#/components/schemas/sensorheight'
-                  - $ref: '#/components/schemas/imgleft'
-                  - $ref: '#/components/schemas/imgtop'
-                  - $ref: '#/components/schemas/imgwidth'
-                  - $ref: '#/components/schemas/imgheight'
-                  - $ref: '#/components/schemas/imgquality'
-                  - $ref: '#/components/schemas/imgres'
-                  - $ref: '#/components/schemas/kneepoint'
-                  - $ref: '#/components/schemas/analoggain'
-                  - $ref: '#/components/schemas/maxkneegain'
-                  - $ref: '#/components/schemas/maxexptime'
-                  - $ref: '#/components/schemas/maxdigitalgain'
-                  - $ref: '#/components/schemas/webserverport'
-                  - $ref: '#/components/schemas/admin'
-                  - $ref: '#/components/schemas/viewer'
-                  - $ref: '#/components/schemas/maxsensorwidth'
-                  - $ref: '#/components/schemas/maxsensorheight'
-                  - $ref: '#/components/schemas/mdmode'
-                  - $ref: '#/components/schemas/motiondetect'
-                  - $ref: '#/components/schemas/mdtotalzones'
-                  - $ref: '#/components/schemas/auxin'
-                  - $ref: '#/components/schemas/auxout'
-                  - $ref: '#/components/schemas/cropping'
-                  - $ref: '#/components/schemas/1080p_mode'
-                  - $ref: '#/components/schemas/pmask'
-                  - $ref: '#/components/schemas/focus'
-                  - $ref: '#/components/schemas/zoom'
-                  - $ref: '#/components/schemas/focusleft'
-                  - $ref: '#/components/schemas/focustop'
-                  - $ref: '#/components/schemas/focusright'
-                  - $ref: '#/components/schemas/focusbottom'
-                  - $ref: '#/components/schemas/focuswindow'
-                  - $ref: '#/components/schemas/af_dn'
-                  - $ref: '#/components/schemas/af_zoom'
-                  - $ref: '#/components/schemas/casino_mode'
-                  - $ref: '#/components/schemas/netopt'
-                  - $ref: '#/components/schemas/multicast_rec'
-                  - $ref: '#/components/schemas/en_multicast'
-                  - $ref: '#/components/schemas/fps'
-                  - $ref: '#/components/schemas/qp'
-                  - $ref: '#/components/schemas/qp_max'
-                  - $ref: '#/components/schemas/ratelimit_mode'
-                  - $ref: '#/components/schemas/ratelimit'
-                  - $ref: '#/components/schemas/bitrate'
-                  - $ref: '#/components/schemas/keyframeinterval'
-                  - $ref: '#/components/schemas/rtspport'
-                  - $ref: '#/components/schemas/spacialfilter'
-                  - $ref: '#/components/schemas/name'
-                  - $ref: '#/components/schemas/mtu'
-                  - $ref: '#/components/schemas/ip'
-                  - $ref: '#/components/schemas/subnetmask'
-                  - $ref: '#/components/schemas/gateway'
-                  - $ref: '#/components/schemas/webserverport'
-                  - $ref: '#/components/schemas/eth_negotiation'
-                  - $ref: '#/components/schemas/features'
-                  - $ref: '#/components/schemas/audioinput'
-                  - $ref: '#/components/schemas/linein_volume'
-                  - $ref: '#/components/schemas/mic_boost'
-                  - $ref: '#/components/schemas/piris'
-                  - $ref: '#/components/schemas/pirispos'
-                  - $ref: '#/components/schemas/ir'
-                  - $ref: '#/components/schemas/white_balance'
-                  - $ref: '#/components/schemas/wbwndctrl'
-                  - $ref: '#/components/schemas/wbwndleft'
-                  - $ref: '#/components/schemas/wbwndtop'
-                  - $ref: '#/components/schemas/wbwndwidth'
-                  - $ref: '#/components/schemas/wbwndheight'
-                  - $ref: '#/components/schemas/ntpserver_ip'
-                  - $ref: '#/components/schemas/enclosure'
-                  - $ref: '#/components/schemas/gamma'
-                  - $ref: '#/components/schemas/gamma2'
-                  - $ref: '#/components/schemas/bandwidthsaving'
-                  - $ref: '#/components/schemas/lowpower'
-                  - $ref: '#/components/schemas/motion_compensation'
-                  - $ref: '#/components/schemas/adjustable_ir'
-                  - $ref: '#/components/schemas/irwidepos'
-                  - $ref: '#/components/schemas/irtelepos'
-                  - $ref: '#/components/schemas/irpos_chan1'
-                  - $ref: '#/components/schemas/irpos_chan2'
-                  - $ref: '#/components/schemas/snapstream'
-                  - $ref: '#/components/schemas/sensorcount'
-                  - $ref: '#/components/schemas/scaling'
-                  - $ref: '#/components/schemas/scaling_size'
-                  - $ref: '#/components/schemas/sd_codec'
-                  - $ref: '#/components/schemas/sd_fps'
-                  - $ref: '#/components/schemas/sd_recording'
-                  - $ref: '#/components/schemas/sd_networkfail'
-                  - $ref: '#/components/schemas/sd_motionalarm'
-                  - $ref: '#/components/schemas/sd_ioalarm'
-                  - $ref: '#/components/schemas/sd_stampspan'
-                  - $ref: '#/components/schemas/sd_imgleft'
-                  - $ref: '#/components/schemas/sd_imgright'
-                  - $ref: '#/components/schemas/sd_imgtop'
-                  - $ref: '#/components/schemas/sd_imgbottom'
-                  - $ref: '#/components/schemas/sd_imgres'
-                  - $ref: '#/components/schemas/qos_enabled'
-                  - $ref: '#/components/schemas/qos_video'
-                  - $ref: '#/components/schemas/qos_default'
-                  - $ref: '#/components/schemas/ipv6enabled'
-                  - $ref: '#/components/schemas/ipv6address'
-                  - $ref: '#/components/schemas/ipv6prefixlen'
-                  - $ref: '#/components/schemas/ipv6dhcp'
-                  - $ref: '#/components/schemas/ipv6addresstype'
-                  - $ref: '#/components/schemas/ipv6acceptrouters'
-                  - $ref: '#/components/schemas/equalbright'
-                  - $ref: '#/components/schemas/equalcolor'
-                  - $ref: '#/components/schemas/vertical_alignment'
-                  - $ref: '#/components/schemas/piris_ref_channel'
-                  - $ref: '#/components/schemas/exp_ref_channel'
+                type: object
+                properties:
+                  day_binning:
+                    $ref: '#/components/schemas/day_binning'
+                  night_binning:
+                    $ref: '#/components/schemas/night_binning'
+                  daynight:
+                    $ref: '#/components/schemas/daynight'
+                  upscaling:
+                    $ref: '#/components/schemas/upscaling'
+                  channelenable:
+                    $ref: '#/components/schemas/channelenable'
+                  brightness:
+                    $ref: '#/components/schemas/brightness'
+                  sharpness:
+                    $ref: '#/components/schemas/sharpness'
+                  saturation:
+                    $ref: '#/components/schemas/saturation'
+                  blue:
+                    $ref: '#/components/schemas/blue'
+                  red:
+                    $ref: '#/components/schemas/red'
+                  illum:
+                    $ref: '#/components/schemas/illum'
+                  freq:
+                    $ref: '#/components/schemas/freq'
+                  lowlight:
+                    $ref: '#/components/schemas/lowlight'
+                  shortexposures:
+                    $ref: '#/components/schemas/shortexposures'
+                  autoexp:
+                    $ref: '#/components/schemas/autoexp'
+                  exposure:
+                    $ref: '#/components/schemas/exposure'
+                  expwndleft:
+                    $ref: '#/components/schemas/expwndleft'
+                  expwndtop:
+                    $ref: '#/components/schemas/expwndtop'
+                  expwndwidth:
+                    $ref: '#/components/schemas/expwndwidth'
+                  expwndheight:
+                    $ref: '#/components/schemas/expwndheight'
+                  sensorleft:
+                    $ref: '#/components/schemas/sensorleft'
+                  sensortop:
+                    $ref: '#/components/schemas/sensortop'
+                  sensorwidth:
+                    $ref: '#/components/schemas/sensorwidth'
+                  sensorheight:
+                    $ref: '#/components/schemas/sensorheight'
+                  imgleft:
+                    $ref: '#/components/schemas/imgleft'
+                  imgtop:
+                    $ref: '#/components/schemas/imgtop'
+                  imgwidth:
+                    $ref: '#/components/schemas/imgwidth'
+                  imgheight:
+                    $ref: '#/components/schemas/imgheight'
+                  imgquality:
+                    $ref: '#/components/schemas/imgquality'
+                  imgres:
+                    $ref: '#/components/schemas/imgres'
+                  kneepoint:
+                    $ref: '#/components/schemas/kneepoint'
+                  analoggain:
+                    $ref: '#/components/schemas/analoggain'
+                  maxkneegain:
+                    $ref: '#/components/schemas/maxkneegain'
+                  maxexptime:
+                    $ref: '#/components/schemas/maxexptime'
+                  maxdigitalgain:
+                    $ref: '#/components/schemas/maxdigitalgain'
+                  webserverport:
+                    $ref: '#/components/schemas/webserverport'
+                  admin:
+                    $ref: '#/components/schemas/admin'
+                  viewer:
+                    $ref: '#/components/schemas/viewer'
+                  maxsensorwidth:
+                    $ref: '#/components/schemas/maxsensorwidth'
+                  maxsensorheight:
+                    $ref: '#/components/schemas/maxsensorheight'
+                  mdmode:
+                    $ref: '#/components/schemas/mdmode'
+                  motiondetect:
+                    $ref: '#/components/schemas/motiondetect'
+                  mdtotalzones:
+                    $ref: '#/components/schemas/mdtotalzones'
+                  auxin:
+                    $ref: '#/components/schemas/auxin'
+                  auxout:
+                    $ref: '#/components/schemas/auxout'
+                  cropping:
+                    $ref: '#/components/schemas/cropping'
+                  1080p_mode:
+                    $ref: '#/components/schemas/1080p_mode'
+                  pmask:
+                    $ref: '#/components/schemas/pmask'
+                  focus:
+                    $ref: '#/components/schemas/focus'
+                  zoom:
+                    $ref: '#/components/schemas/zoom'
+                  focusleft:
+                    $ref: '#/components/schemas/focusleft'
+                  focustop:
+                    $ref: '#/components/schemas/focustop'
+                  focusright:
+                    $ref: '#/components/schemas/focusright'
+                  focusbottom:
+                    $ref: '#/components/schemas/focusbottom'
+                  focuswindow:
+                    $ref: '#/components/schemas/focuswindow'
+                  af_dn:
+                    $ref: '#/components/schemas/af_dn'
+                  af_zoom:
+                    $ref: '#/components/schemas/af_zoom'
+                  casino_mode:
+                    $ref: '#/components/schemas/casino_mode'
+                  netopt:
+                    $ref: '#/components/schemas/netopt'
+                  multicast_rec:
+                    $ref: '#/components/schemas/multicast_rec'
+                  en_multicast:
+                    $ref: '#/components/schemas/en_multicast'
+                  fps:
+                    $ref: '#/components/schemas/fps'
+                  qp:
+                    $ref: '#/components/schemas/qp'
+                  qp_max:
+                    $ref: '#/components/schemas/qp_max'
+                  ratelimit_mode:
+                    $ref: '#/components/schemas/ratelimit_mode'
+                  ratelimit:
+                    $ref: '#/components/schemas/ratelimit'
+                  bitrate:
+                    $ref: '#/components/schemas/bitrate'
+                  keyframeinterval:
+                    $ref: '#/components/schemas/keyframeinterval'
+                  rtspport:
+                    $ref: '#/components/schemas/rtspport'
+                  spacialfilter:
+                    $ref: '#/components/schemas/spacialfilter'
+                  name:
+                    $ref: '#/components/schemas/name'
+                  mtu:
+                    $ref: '#/components/schemas/mtu'
+                  ip:
+                    $ref: '#/components/schemas/ip'
+                  subnetmask:
+                    $ref: '#/components/schemas/subnetmask'
+                  gateway:
+                    $ref: '#/components/schemas/gateway'
+                  eth_negotiation:
+                    $ref: '#/components/schemas/eth_negotiation'
+                  features:
+                    $ref: '#/components/schemas/features'
+                  audioinput:
+                    $ref: '#/components/schemas/audioinput'
+                  linein_volume:
+                    $ref: '#/components/schemas/linein_volume'
+                  mic_boost:
+                    $ref: '#/components/schemas/mic_boost'
+                  piris:
+                    $ref: '#/components/schemas/piris'
+                  pirispos:
+                    $ref: '#/components/schemas/pirispos'
+                  ir:
+                    $ref: '#/components/schemas/ir'
+                  white_balance:
+                    $ref: '#/components/schemas/white_balance'
+                  wbwndctrl:
+                    $ref: '#/components/schemas/wbwndctrl'
+                  wbwndleft:
+                    $ref: '#/components/schemas/wbwndleft'
+                  wbwndtop:
+                    $ref: '#/components/schemas/wbwndtop'
+                  wbwndwidth:
+                    $ref: '#/components/schemas/wbwndwidth'
+                  wbwndheight:
+                    $ref: '#/components/schemas/wbwndheight'
+                  ntpserver_ip:
+                    $ref: '#/components/schemas/ntpserver_ip'
+                  enclosure:
+                    $ref: '#/components/schemas/enclosure'
+                  gamma:
+                    $ref: '#/components/schemas/gamma'
+                  gamma2:
+                    $ref: '#/components/schemas/gamma2'
+                  bandwidthsaving:
+                    $ref: '#/components/schemas/bandwidthsaving'
+                  lowpower:
+                    $ref: '#/components/schemas/lowpower'
+                  motion_compensation:
+                    $ref: '#/components/schemas/motion_compensation'
+                  adjustable_ir:
+                    $ref: '#/components/schemas/adjustable_ir'
+                  irwidepos:
+                    $ref: '#/components/schemas/irwidepos'
+                  irtelepos:
+                    $ref: '#/components/schemas/irtelepos'
+                  irpos_chan1:
+                    $ref: '#/components/schemas/irpos_chan1'
+                  irpos_chan2:
+                    $ref: '#/components/schemas/irpos_chan2'
+                  snapstream:
+                    $ref: '#/components/schemas/snapstream'
+                  sensorcount:
+                    $ref: '#/components/schemas/sensorcount'
+                  scaling:
+                    $ref: '#/components/schemas/scaling'
+                  scaling_size:
+                    $ref: '#/components/schemas/scaling_size'
+                  sd_codec:
+                    $ref: '#/components/schemas/sd_codec'
+                  sd_fps:
+                    $ref: '#/components/schemas/sd_fps'
+                  sd_recording:
+                    $ref: '#/components/schemas/sd_recording'
+                  sd_networkfail:
+                    $ref: '#/components/schemas/sd_networkfail'
+                  sd_motionalarm:
+                    $ref: '#/components/schemas/sd_motionalarm'
+                  sd_ioalarm:
+                    $ref: '#/components/schemas/sd_ioalarm'
+                  sd_stampspan:
+                    $ref: '#/components/schemas/sd_stampspan'
+                  sd_imgleft:
+                    $ref: '#/components/schemas/sd_imgleft'
+                  sd_imgright:
+                    $ref: '#/components/schemas/sd_imgright'
+                  sd_imgtop:
+                    $ref: '#/components/schemas/sd_imgtop'
+                  sd_imgbottom:
+                    $ref: '#/components/schemas/sd_imgbottom'
+                  sd_imgres:
+                    $ref: '#/components/schemas/sd_imgres'
+                  qos_enabled:
+                    $ref: '#/components/schemas/qos_enabled'
+                  qos_video:
+                    $ref: '#/components/schemas/qos_video'
+                  qos_default:
+                    $ref: '#/components/schemas/qos_default'
+                  ipv6enabled:
+                    $ref: '#/components/schemas/ipv6enabled'
+                  ipv6address:
+                    $ref: '#/components/schemas/ipv6address'
+                  ipv6prefixlen:
+                    $ref: '#/components/schemas/ipv6prefixlen'
+                  ipv6dhcp:
+                    $ref: '#/components/schemas/ipv6dhcp'
+                  ipv6addresstype:
+                    $ref: '#/components/schemas/ipv6addresstype'
+                  ipv6acceptrouters:
+                    $ref: '#/components/schemas/ipv6acceptrouters'
+                  equalbright:
+                    $ref: '#/components/schemas/equalbright'
+                  equalcolor:
+                    $ref: '#/components/schemas/equalcolor'
+                  vertical_alignment:
+                    $ref: '#/components/schemas/vertical_alignment'
+                  piris_ref_channel:
+                    $ref: '#/components/schemas/piris_ref_channel'
+                  exp_ref_channel:
+                    $ref: '#/components/schemas/exp_ref_channel'
   /g711:
     post:
       tags:
@@ -1045,1056 +1388,675 @@ paths:
 components:
   schemas:
     ipv6dhcp:
-      name: ipv6dhcp
-      in: query
       description: |
         Enable/disable DHCP for IPv6.
-      schema:
-        type: string
-        enum:
-          - 'on'
-          - 'off'
+      type: string
+      enum:
+        - 'on'
+        - 'off'
     ipv6addresstype:
-      name: ipv6addresstype
-      in: query
       description: |
         IPv6 address type. Use `manual` to override a DHCP-set address.
-      schema:
-        type: string
-        enum:
-          - dhcp
-          - manual
+      type: string
+      enum:
+        - dhcp
+        - manual
     ipv6acceptrouters:
-      name: ipv6acceptrouters
-      in: query
       description: |
         IPv6 accept routers setting.
-      schema:
-        type: boolean
+      type: boolean
     ipv6enabled:
-      name: ipv6enabled
-      in: query
       description: |
         Enable/disable IPv6.
-      schema:
-        type: boolean
+      type: boolean
     ipv6address:
-      name: ipv6address
-      in: query
       description: |
         The IPv6 address for the camera.
-      schema:
-        type: string
-        format: ipv6
+      type: string
+      format: ipv6
     ipv6prefixlen:
-      name: ipv6prefixlen
-      in: query
       description: |
         The IPv6 prefix.
-      schema:
-        type: string
+      type: string
     scaling:
-      name: scaling
-      in: query
       description: Enable or disable down-scaling.
-      schema:
-        type: string
-        enum:
-          - 'on'
-          - 'off'
+      type: string
+      enum:
+        - 'on'
+        - 'off'
     scaling_size:
-      name: scaling
-      in: query
       description: 'Set scaling size as `width, height`. Width ranges from 128 to 1280; height ranges from 96 to 720.'
-      schema:
-        type: string
+      type: string
     qos_enabled:
-      name: qos_enabled
-      in: query
       description: |
         Arecont Vision cameras support RFC 2474 “Definition of the Differentiated services field (DS field) in the IPv4 and IPv6 headers”, which is widely adopted by router manufacturers to implement quality of service (QoS) mechanism. 
 
         Enable or disable quality of service (QOS).
-      schema:
-        type: integer
-        minimum: 0
-        maximum: 1
+      type: integer
+      minimum: 0
+      maximum: 1
     qos_video:
-      name: qos_video
-      in: query
       description: |
         In Arecont Vision cameras, Per-Hop Behavior (PHB) type Assured Forwarding (AF) is the default PHB for video streaming over RTP. The recommended default Differentiated Services Code Point (DSCP) of AF is 34, which means low drop.
-      schema:
-        type: integer
-        minimum: 0
-        maximum: 63
+      type: integer
+      minimum: 0
+      maximum: 63
     qos_default:
-      name: qos_default
-      in: query
       description: |
         In Arecont Vision cameras, Per-Hop Behavior (PHB) type Assured Forwarding (AF) is the default PHB for video streaming over RTP. The recommended default Differentiated Services Code Point (DSCP) of AF is 34, which means low drop. All other traffic uses default PHB with DSCP value 0.
-      schema:
-        type: integer
-        minimum: 0
-        maximum: 63
+      type: integer
+      minimum: 0
+      maximum: 63
     sd_codec:
-      name: sd_codec
-      in: query
       description: The codec used for video recorded to the camera's SD card.
-      schema:
-        type: string
-        enum:
-          - jpeg
-          - h264
+      type: string
+      enum:
+        - jpeg
+        - h264
     sd_fps:
-      name: sd_fps
-      in: query
       description: The framerate for video recorded to the camera's SD card.
-      schema:
-        type: integer
-        minimum: 0
-        maximum: 30
+      type: integer
+      minimum: 0
+      maximum: 30
     sd_playback_fps:
-      name: sd_playback_fps
-      in: query
       description: 'Used to playback video from SD cards in 4k models. For 4K models, you do not “download” video from the SD card. Instead, you dynamically controll the playback framerate.'
-      schema:
-        type: integer
-        minimum: 0
-        maximum: 30
+      type: integer
+      minimum: 0
+      maximum: 30
     sd_recording:
-      name: sd_recording
-      in: query
       description: Enables/disables continuous local recording.
-      schema:
-        type: string
-        enum:
-          - 'on'
-          - 'off'
+      type: string
+      enum:
+        - 'on'
+        - 'off'
     sd_networkfail:
-      name: sd_networkfail
-      in: query
       description: Enables/disables local recording on network failure events.
-      schema:
-        type: string
-        enum:
-          - 'on'
-          - 'off'
+      type: string
+      enum:
+        - 'on'
+        - 'off'
     sd_motionalarm:
-      name: sd_motionalarm
-      in: query
       description: Enables/disables local recording on motion events.
-      schema:
-        type: string
-        enum:
-          - 'on'
-          - 'off'
+      type: string
+      enum:
+        - 'on'
+        - 'off'
     sd_ioalarm:
-      name: sd_ioalarm
-      in: query
       description: Enables/disables local recording on I/O alarm events.
-      schema:
-        type: string
-        enum:
-          - 'on'
-          - 'off'
+      type: string
+      enum:
+        - 'on'
+        - 'off'
     sd_stampspan:
-      name: sd_stampspan
-      in: query
       description: Returns timestamps for recorded video.
-      schema:
-        type: boolean
+      type: boolean
     sd_playbackstamp:
-      name: sd_playbackstamp
-      in: query
       description: 'Playback video for the recorded timestamps - `beginningTime, endingTime`. If you don''t specify the `endTime` or set `0` for the end time, the camera will play until the end of recorded video.'
-      schema:
-        type: string
-        enum:
-          - 'on'
-          - 'off'
+      type: string
+      enum:
+        - 'on'
+        - 'off'
     sd:
-      name: sd
-      in: query
       description: |
         Request images/video recorded on the SD card (local recording). `playback` plays back video in real time; `download` lets you stream video as fast as possible. Do not provide other parameters when reqeusting video recorded locally. 
-      schema:
-        type: string
-        enum:
-          - 'on'
-          - 'off'
+      type: string
+      enum:
+        - 'on'
+        - 'off'
     sd_imgleft:
-      name: sd_imgleft
-      in: query
       description: Select a region of video that you want ot record to the SD card. You should set this parameter before you turn on local recording.
-      schema:
-        type: integer
+      type: integer
     sd_imgright:
-      name: sd_imgright
-      in: query
       description: Select a region of video that you want ot record to the SD card. You should set this parameter before you turn on local recording.
-      schema:
-        type: integer
+      type: integer
     sd_imgtop:
-      name: sd_imgtop
-      in: query
       description: Select a region of video that you want ot record to the SD card. You should set this parameter before you turn on local recording.
-      schema:
-        type: integer
+      type: integer
     sd_imgbottom:
-      name: sd_imgbottom
-      in: query
       description: Select a region of video that you want ot record to the SD card. You should set this parameter before you turn on local recording.
-      schema:
-        type: integer
+      type: integer
     sd_imgres:
-      name: sd_imgres
-      in: query
       description: Determine whether to record SD images at full or half resolution.
-      schema:
-        type: string
-        enum:
-          - full
-          - half
+      type: string
+      enum:
+        - full
+        - half
     irpos_chan1:
-      name: irpos_chan1
-      in: query
       description: |
         Controls IR intensity on LED board 1 of FLEX model cameras.
-      schema:
-        type: integer
-        minimum: 0
-        maximum: 32
+      type: integer
+      minimum: 0
+      maximum: 32
     irpos_chan2:
-      name: irpos_chan2
-      in: query
       description: |
         Controls IR intensity on LED board 2 of FLEX model cameras.
-      schema:
-        type: integer
-        minimum: 0
-        maximum: 32
+      type: integer
+      minimum: 0
+      maximum: 32
     kneepoint:
-      name: kneepoint
-      in: query
       description: |
         Custom mode setting
-      schema:
-        type: integer
-        minimum: 1
-        maximum: 100
+      type: integer
+      minimum: 1
+      maximum: 100
     analoggain:
-      name: analoggain
-      in: query
       description: |
         Custom mode setting
-      schema:
-        type: integer
-        minimum: 1
-        maximum: 100
+      type: integer
+      minimum: 1
+      maximum: 100
     maxkneegain:
-      name: maxkneegain
-      in: query
       description: |
         Custom mode setting
-      schema:
-        type: integer
-        minimum: 1
-        maximum: 100
+      type: integer
+      minimum: 1
+      maximum: 100
     maxexptime:
-      name: maxexptime
-      in: query
       description: |
         Custom mode setting
-      schema:
-        type: integer
-        minimum: 1
-        maximum: 100
+      type: integer
+      minimum: 1
+      maximum: 100
     maxdigitalgain:
-      name: maxdigitalgain
-      in: query
       description: |
         Custom mode setting
-      schema:
-        type: integer
-        minimum: 1
-        maximum: 100
+      type: integer
+      minimum: 1
+      maximum: 100
     day_binning:
-      name: day_binning
-      in: query
       description: |
         Enables or disables day binning mode for supported cameras.
-      schema:
-        type: string
-        enum:
-          - 'on'
-          - 'off'
+      type: string
+      enum:
+        - 'on'
+        - 'off'
     night_binning:
-      name: night_binning
-      in: query
       description: |
         Enables or disables day binning mode for supported cameras.
-      schema:
-        type: string
-        enum:
-          - 'on'
-          - 'off'
+      type: string
+      enum:
+        - 'on'
+        - 'off'
     daynight:
-      name: daynight
-      in: query
       description: 'Sets day/night mode. Cameras default to `auto`, which sets day and night modes automatically. `dual` allows the client to pull both color and grayscale images simultaneously.'
-      schema:
-        type: string
-        enum:
-          - auto
-          - day
-          - night
-          - dual
+      type: string
+      enum:
+        - auto
+        - day
+        - night
+        - dual
     upscaling:
-      name: upscaling
-      in: query
       description: |
         Scales monocrome images to the same size as color images. If upscaling is disabled, the ratio is 1.6 between color images and monochrome images. 
-      schema:
-        type: string
-        enum:
-          - 'on'
-          - 'off'
+      type: string
+      enum:
+        - 'on'
+        - 'off'
     channelenable:
-      name: channelenable
-      in: query
       description: The channels you want to enable.
-      schema:
-        type: string
-        minimum: 1
-        maximum: 15
+      type: string
+      minimum: 1
+      maximum: 15
     rotate:
-      name: rotate
-      in: query
       description: |
         Sets the rotation of the image in 90 degree increments. 90 and 270 degree rotations are available in newer models; get features to determine whether or not your camera supports these values.
-      schema:
-        type: integer
-        multipleOf: 90
-        minimum: 0
-        maximum: 270
+      type: integer
+      multipleOf: 90
+      minimum: 0
+      maximum: 270
     brightness:
-      name: brightness
-      in: query
       description: Sets brightness for the camera or channel.
-      schema:
-        type: integer
-        minimum: -50
-        maximum: 50
+      type: integer
+      minimum: -50
+      maximum: 50
     sharpness:
-      name: sharpness
-      in: query
       description: Sets sharpness for the camera or channel.
-      schema:
-        type: integer
-        minimum: 0
-        maximum: 4
+      type: integer
+      minimum: 0
+      maximum: 4
     saturation:
-      name: saturation
-      in: query
       description: Sets color saturation for the camera or channel.
-      schema:
-        type: integer
-        minimum: 0
-        maximum: 6
+      type: integer
+      minimum: 0
+      maximum: 6
     blue:
-      name: blue
-      in: query
       description: Sets blue balance for the camera or channel.
-      schema:
-        type: integer
-        minimum: -10
-        maximum: 10
+      type: integer
+      minimum: -10
+      maximum: 10
     red:
-      name: red
-      in: query
       description: Sets red balance for the camera or channel.
-      schema:
-        type: integer
-        minimum: -10
-        maximum: 10
+      type: integer
+      minimum: -10
+      maximum: 10
     illum:
-      name: illum
-      in: query
       description: Sets illumination for the camera or channel.
-      schema:
-        type: string
-        enum:
-          - auto
-          - indoor
-          - outdoor
-          - mlx
+      type: string
+      enum:
+        - auto
+        - indoor
+        - outdoor
+        - mlx
     freq:
-      name: freq
-      in: query
       description: 'Mains frequency in Hz, used for indoor lighting compensation.'
-      schema:
-        type: integer
-        minimum: 50
-        maximum: 60
-        multipleOf: 10
+      type: integer
+      minimum: 50
+      maximum: 60
+      multipleOf: 10
     lowlight:
-      name: lowlight
-      in: query
       description: Exposure (low light) mode.
-      schema:
-        type: string
-        enum:
-          - highspeed
-          - speed
-          - balance
-          - quality
-          - moonlight
+      type: string
+      enum:
+        - highspeed
+        - speed
+        - balance
+        - quality
+        - moonlight
     shortexposures:
-      name: shortexposures
-      in: query
       description: 'Shutter time in high-speed exposure mode, set in milliseconds.'
-      schema:
-        type: integer
-        minimum: 1
-        maximum: 80
+      type: integer
+      minimum: 1
+      maximum: 80
     exposure:
-      name: exposure
-      in: query
       description: Auto exposure mode
-      schema:
-        type: string
-        enum:
-          - auto
-          - 'on'
-          - 'off'
+      type: string
+      enum:
+        - auto
+        - 'on'
+        - 'off'
     autoexp:
-      name: autoexp
-      in: query
       description: Auto exposure mode
-      schema:
-        type: string
-        enum:
-          - 'on'
-          - 'off'
+      type: string
+      enum:
+        - 'on'
+        - 'off'
     expwndleft:
-      name: expwndleft
-      in: query
       description: The exposure window for the sensor.
-      schema:
-        type: integer
-        minimum: 0
+      type: integer
+      minimum: 0
     expwndtop:
-      name: expwndtop
-      in: query
       description: The exposure window for the sensor.
-      schema:
-        type: integer
-        minimum: 0
+      type: integer
+      minimum: 0
     expwndwidth:
-      name: expwndwidth
-      in: query
       description: The exposure window for the sensor.
-      schema:
-        type: integer
-        minimum: 0
+      type: integer
+      minimum: 0
     expwndheight:
-      name: expwndheight
-      in: query
       description: The exposure window for the sensor.
-      schema:
-        type: integer
-        minimum: 0
+      type: integer
+      minimum: 0
     sensorleft:
-      name: sensorleft
-      in: query
       description: 'Sensor cropping, from the left.'
-      schema:
-        type: integer
-        minimum: 0
+      type: integer
+      minimum: 0
     sensortop:
-      name: sensortop
-      in: query
       description: Sensor cropping from the top.
-      schema:
-        type: integer
-        minimum: 0
+      type: integer
+      minimum: 0
     sensorwidth:
-      name: sensorwidth
-      in: query
       description: Sensor cropping based on width. Both sides are equally cropped by half the value.
-      schema:
-        type: integer
-        minimum: 0
+      type: integer
+      minimum: 0
     sensorheight:
-      name: sensorheight
-      in: query
       description: 'Sensor cropping based on height. The top and bottom are equally cropped by half the value, centering the image.'
-      schema:
-        type: integer
-        minimum: 0
+      type: integer
+      minimum: 0
     imgleft:
-      name: imgleft
-      in: query
       description: 'Image setting, used as the implcit perameter in img.jpg image requests.'
-      schema:
-        type: integer
-        minimum: 0
+      type: integer
+      minimum: 0
     imgtop:
-      name: imgtop
-      in: query
       description: 'Image setting, used as the implcit perameter in img.jpg image requests.'
-      schema:
-        type: integer
-        minimum: 0
+      type: integer
+      minimum: 0
     imgwidth:
-      name: imgwidth
-      in: query
       description: 'Image setting, used as the implcit perameter in img.jpg image requests.'
-      schema:
-        type: integer
-        minimum: 0
+      type: integer
+      minimum: 0
     imgheight:
-      name: imgheight
-      in: query
       description: 'Image setting, used as the implcit perameter in img.jpg image requests.'
-      schema:
-        type: integer
-        minimum: 0
+      type: integer
+      minimum: 0
     imgquality:
-      name: imgquality
-      in: query
       description: 'Image setting, used as the implcit perameter list in img.jpg image requests.'
-      schema:
-        type: integer
-        minimum: 1
-        maximum: 26
+      type: integer
+      minimum: 1
+      maximum: 26
     imgres:
-      name: imgres
-      in: query
       description: 'Image setting, used as the implcit perameter list in img.jpg image requests.'
-      schema:
-        type: string
-        enum:
-          - full
-          - half
+      type: string
+      enum:
+        - full
+        - half
     mac:
-      name: mac
-      in: query
       description: Returns the MAC address of the camera.
-      schema:
-        type: string
+      type: string
     model:
-      name: model
-      in: query
       description: Returns the camera's model number. `fullname` returns the camera's base model number and feature leter; `releasename` returns the manufacturer model number and feature letter — the real model number.
-      schema:
-        type: string
-        enum:
-          - fullname
-          - releasename
-          - lpn
-          - internal
+      type: string
+      enum:
+        - fullname
+        - releasename
+        - lpn
+        - internal
     fwversion:
-      name: fwversion
-      in: query
       description: Returns the camera's firmware version.
-      schema:
-        type: boolean
+      type: boolean
     procversion:
-      name: procversion
-      in: query
       description: Returns the image processor version.
-      schema:
-        type: boolean
+      type: boolean
     netversion:
-      name: netversion
-      in: query
       description: Returns the network processor version.
-      schema:
-        type: boolean
+      type: boolean
     revision:
-      name: revision
-      in: query
       description: Returns the PCB version.
-      schema:
-        type: boolean
+      type: boolean
     params:
-      name: params
-      in: query
       description: |
         Perform basic camera actions
 
         * save - commits current settings to flash memory
         * factory - restore factory default settings
         * reboot - restarts the camera
-      schema:
-        type: string
-        enum:
-          - save
-          - factory
-          - reboot
+      type: string
+      enum:
+        - save
+        - factory
+        - reboot
     webserverport:
-      name: webserverport
-      in: query
       description: The port for the camera's web server.
-      schema:
-        type: integer
-        minimum: 0
-        maximum: 65535
+      type: integer
+      minimum: 0
+      maximum: 65535
     admin:
-      name: admin
-      in: query
-      description: Get or set the admin-level password.
-      schema:
-        oneOf:
-          - type: string
-            description: ASCII symbols representing your password.
-            minlength: 1
-            maxlength: 16
-            format: password
-          - type: string
-            description: The keyword to erase the current password.
-            enum:
-              - empty
+      description: Get or set the admin-level password. Use the word 'empty' to reset the password.
+      type: string
+      minLength: 1
+      maxLength: 16
+      format: password
     viewer:
-      name: viewer
-      in: query
-      description: Get or set the viewer-level password.
-      schema:
-        oneOf:
-          - type: string
-            description: ASCII symbols representing your password.
-            minlength: 1
-            maxlength: 16
-            format: password
-          - type: string
-            description: The keyword to erase the current password.
-            enum:
-              - empty
+      description: Get or set the viewer-level password. Use the word 'empty' to reset the password.
+      type: string
+      minLength: 1
+      maxLength: 16
+      format: password
     maxsensorwidth:
-      name: maxsensorwidth
-      in: query
       description: Get the maximum sensor width.
-      schema:
-        type: integer
+      type: integer
     maxsensorheight:
-      name: maxsensorheight
-      in: query
       description: Get the maximum sensor height.
-      schema:
-        type: integer
+      type: integer
     mdmode:
-      name: mdmode
-      in: query
       description: Get or set motion alarm settings
-      schema:
-        type: string
-        enum:
-          - 'on'
-          - 'off'
+      type: string
+      enum:
+        - 'on'
+        - 'off'
     motiondetect:
-      name: motiondetect
-      in: query
       description: Get or set motion detection settings
-      schema:
-        type: string
-        enum:
-          - 'on'
-          - 'off'
+      type: string
+      enum:
+        - 'on'
+        - 'off'
     mdtotalzones:
-      name: mdtotalzones
-      in: query
       description: Set regular (64) or extended motion detection mode (1024). 4k cameras support motion detection in extended mode either.
-      schema:
-        type: integer
+      type: integer
       
     mdzonesize:
-      name: mdzonesize
-      in: query
       description: Set motion detection zone size.
-      schema:
-        type: integer
-        minimum: 1
-        maximum: 16
-      
+      type: integer
+      minimum: 1
+      maximum: 16
+    
     mdlevelthreshold:
-      name: mdlevelthreshold
-      in: query
       description: Motion detection zone threshold
-      schema:
-        type: integer
-        minimum: 2
-        maximum: 31
+      type: integer
+      minimum: 2
+      maximum: 31
       
     mddetail:
-      name: mdlevelthreshold
-      in: query
       description: Motion detection zone detail
-      schema:
-        type: integer
-        minimum: 1
-        maximum: 255
+      type: integer
+      minimum: 1
+      maximum: 255
       
     mdprivacymask:
-      name: mdprivacymask
-      in: query
       description: Motion detection privacy mask
-      schema:
-        type: integer
+      type: integer
       
     mdresult:
-      name: mdlevelthreshold
-      in: query
       description: Motion detection zone result
-      schema:
-        type: string
+      type: string
     auxin:
-      name: auxin
-      in: query
       description: Get auxin.
-      schema:
-        type: boolean
+      type: boolean
     auxout:
-      name: auxout
-      in: query
       description: Get or set auxiliary audio out.
-      schema:
-        type: string
-        enum:
-          - 'on'
-          - 'off'
+      type: string
+      enum:
+        - 'on'
+        - 'off'
     cropping:
-      name: cropping
-      in: query
       description: |
         Get or set flexible cropping.
-      schema:
-        type: string
-        enum:
-          - 'on'
-          - 'off'
+      type: string
+      enum:
+        - 'on'
+        - 'off'
     1080p_mode:
-      name: 1080p_mode
-      in: query
       description: |
         Get or set 1080p mode — used in 10xx5 models only.
-      schema:
-        type: string
-        enum:
-          - 'on'
-          - 'off'
+      type: string
+      enum:
+        - 'on'
+        - 'off'
     pmask:
-      name: pmask
-      in: query
       description: |
         Get or set the privacy mask. Use `pmask<direction>` to set the privacy mask block.
-      schema:
-        type: string
-        enum:
-          - 'on'
-          - 'off'
+      type: string
+      enum:
+        - 'on'
+        - 'off'
     pmaskleft:
-      name: pmaskleft
-      in: query
       description: |
         Get, set, or erace a privacy mask block (32 x 32 pixels per block).
-      schema:
-        type: integer
-        minimum: 0
-        maximum: 1023
+      type: integer
+      minimum: 0
+      maximum: 1023
     pmaskright:
-      name: pmaskright
-      in: query
       description: |
         Get, set, or erace a privacy mask block (32 x 32 pixels per block).
-      schema:
-        type: integer
-        minimum: 0
-        maximum: 1023
+      type: integer
+      minimum: 0
+      maximum: 1023
     pmasktop:
-      name: pmasktop
-      in: query
       description: |
         Get, set, or erace a privacy mask block (32 x 32 pixels per block).
-      schema:
-        type: integer
-        minimum: 0
-        maximum: 1023
+      type: integer
+      minimum: 0
+      maximum: 1023
     pmaskbottom:
-      name: pmaskbottom
-      in: query
       description: |
         Get, set, or erace a privacy mask block (32 x 32 pixels per block).
-      schema:
-        type: integer
-        minimum: 0
-        maximum: 1023
+      type: integer
+      minimum: 0
+      maximum: 1023
     pmaskblock:
-      name: pmaskblock
-      in: query
       description: |
         Set the privacy mask block.
-      schema:
-        type: string
-        enum:
-          - 'on'
-          - 'off'
+      type: string
+      enum:
+        - 'on'
+        - 'off'
     focus:
-      name: focus
-      in: query
       description: |
         Get or set focus moving steps. After setting focus/zoom, the new focus becomes valid after the next frame.
-      schema:
-        oneOf:
-          - type: string
-            enum:
-              - fullrange
-              - shortrange
-              - status
-          - type: integer
-            minimum: -20
-            maximum: 20
+      oneOf:
+        - type: string
+          enum:
+            - fullrange
+            - shortrange
+            - status
+        - type: integer
+          minimum: -20
+          maximum: 20
     focusleft:
-      name: focusleft
-      in: query
-      schema:
-        type: integer
-        minimum: 0
+      type: integer
+      minimum: 0
     focustop:
-      name: focustop
-      in: query
-      schema:
-        type: integer
-        minimum: 0
+      type: integer
+      minimum: 0
     focusright:
-      name: focusright
-      in: query
-      schema:
-        type: integer
-        minimum: 0
+      type: integer
+      minimum: 0
     focusbottom:
-      name: focusbottom
-      in: query
-      schema:
-        type: integer
-        minimum: 0
+      type: integer
+      minimum: 0
     zoom:
-      name: zoom
-      in: query
       description: |
         Set zoom moving steps.
-      schema:
-        oneOf:
-          - type: string
-            enum:
-              - reset
-            description: Resets zoom level.
-          - type: integer
-            minimum: -20
-            maximum: 20
+      oneOf:
+        - type: string
+          enum:
+            - reset
+          description: Resets zoom level.
+        - type: integer
+          minimum: -20
+          maximum: 20
     focuswindow:
-      name: focuswindow
-      in: query
-      description: Get or set the four sides of the focus window.
-      schema:
-        type: array
-        description: 'When setting the focus window, provide the four values of the focus window as comma-separated integers from 0 to the maximum sensor value — width, height, width, height.'
-        minItems: 4
-        maxItems: 4
-        items:
-          type: integer
+      description: |
+        Get or set the four sides of the focus window.
+        
+        When setting the focus window, provide the four values of the focus window as comma-separated integers from 0 to the maximum sensor value — width, height, width, height.
+      type: array
+      minItems: 4
+      maxItems: 4
+      items:
+        type: integer
     af_dn:
-      name: af_dn
-      in: query
       description: |
         Get or set autofocus after enabling the day-night switch.
-      schema:
-        type: string
-        enum:
-          - 'on'
-          - 'off'
+      type: string
+      enum:
+        - 'on'
+        - 'off'
     af_zoom:
-      name: af_zoom
-      in: query
       description: Get or set autofocus after zoom.
-      schema:
-        type: string
-        enum:
-          - 'on'
-          - 'off'
+      type: string
+      enum:
+        - 'on'
+        - 'off'
     casino_mode:
-      name: casino_mode
-      in: query
       description: Get or set casino mode (1080p models only)
-      schema:
-        type: string
-        enum:
-          - 'on'
-          - 'off'
+      type: string
+      enum:
+        - 'on'
+        - 'off'
     netopt:
-      name: netopt
-      in: query
       description: |
         Get or set network related settings. Integers correspond to the bits you want to enable or disable.
 
 
         bit 0 = DHCP IP assignment; bit 1 = BOOTP IP assignment; bit 2 = RARP IP assignment; bit 3 = IP lock; bit 4 = NTP time requester; bit 5 = PSIA discovery multicast server; bit 6 = RTP multicast server; bit 7 = MTU enable/disable; bit 8 = PSIA discovery zeroconfig server; bit 9 = IPv6 stack enable; bit 10 = DHCPv6 enable
-      schema:
-        type: integer
-        maximum: 10
-        minimum: 0
+      type: integer
+      maximum: 10
+      minimum: 0
     streamip:
-      name: streamip
-      in: query
       description: Get or set the multicast IP address.
-      schema:
-        type: string
-        format: ipv4
-        pattern: '^([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])$'
+      type: string
+      format: ipv4
+      pattern: '^([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])$'
     rtpport:
-      name: rtpport
-      in: query
       description: Get or set the multicast port.
-      schema:
-        type: integer
-        minimum: 0
-        maximum: 65535
+      type: integer
+      minimum: 0
+      maximum: 65535
     sapip:
-      name: sapip
-      in: query
       description: Get or set the multicast SAP IP address.
-      schema:
-        type: string
-        format: ipv4
-        pattern: '^([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])$'
+      type: string
+      format: ipv4
+      pattern: '^([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])$'
     multicast_rec:
-      name: multicast_rec
-      in: query
       description: Get or set the multicast reception setting.
-      schema:
-        type: string
-        enum:
-          - 'on'
-          - 'off'
+      type: string
+      enum:
+        - 'on'
+        - 'off'
     en_multicast:
-      name: en_multicast
-      in: query
       description: |
         Enable multicast announcement.
 
         1. To pass ONVIF conformance test, firmware does not announce ONVIF multicast by default. You need to use this HTTP command to enable multicast announcement manually, or your VMS may fail to establish multicast streaming.
         2. This setting enables or disables support for incoming multicast traffic. Disabling this feature will not affect the camera's ability to provide multicast video. 
         3. For multi-sensor cameras, HTTP commands streamip, sapip and rtpport are channel specific and not global. Currently SurroundVideo series is the only multi-sensor camera that supports these multicast HTTP commands, starting from firmware 65192.14.
-      schema:
-        type: integer
-        minimum: 0
-        maximum: 1
+      type: integer
+      minimum: 0
+      maximum: 1
     res:
-      name: res
-      in: query
       description: The resolution MJPEGs you want to return
-      required: false
-      schema:
-        type: string
-        enum:
-          - full
-          - half
+      type: string
+      enum:
+        - full
+        - half
     x0:
-      name: x0
-      in: query
       description: |
         Left coordinate, used to offset the image. This value should be divisible by 32 if `res=full` or 64 if `res=half`.
-      required: false
-      schema:
-        type: integer
-        format: int32
+      type: integer
+      format: int32
     y0:
-      name: y0
-      in: query
       description: |
         Top coordinate, used to offset the image. This value should be divisible by 32 if `res=full` or 64 if `res=half`.
-      schema:
-        type: integer
-        format: int32
+      type: integer
+      format: int32
     x1:
-      name: x1
-      in: query
       description: |
         Right coordinate, used to offset the image. This value should be divisible by 32 if `res=full` or 64 if `res=half`.
-      required: false
-      schema:
-        type: integer
-        format: int32
+      type: integer
+      format: int32
     y1:
-      name: y1
-      in: query
       description: |
         Bottom coordinate, used to offset the image. This value should be divisible by 32 if `res=full` or 64 if `res=half`.
-      schema:
-        type: integer
+      type: integer
     qp:
-      name: qp
-      in: query
       description: |
         The quantization parameter for the H.264 encoder. Sets the target qp. Lower qp indicates a higher quality image. This paramaeter is ignored if your request includes the bitrate parameter. 
-      schema:
-        type: string
-        minimum: 16
-        maximum: 36
+      type: string
+      minimum: 16
+      maximum: 36
     qp_max:
-      name: qp_max
-      in: query
       description: |
         Get or set the maximum allowed QP value — i.e. the lowest allowable quality.
-      schema:
-        type: string
-        minimum: 16
-        maximum: 36
+      type: string
+      minimum: 16
+      maximum: 36
     ratelimit_mode:
-      name: ratelimit_mode
-      in: query
       description: |
         Get or set variable bitrate limit mode.
-      schema:
-        type: boolean
+      type: boolean
     ratelimit:
-      name: ratelimit
-      in: query
       description: |
         Get or set a variable bitrate limit.
-      schema:
-        type: string
-        minimum: 0
-        maximum: 65535
+      type: string
+      minimum: 0
+      maximum: 65535
     quality:
-      name: quality
-      in: query
       description: The compression quality of the image
-      schema:
-        type: integer
-        minimum: 1
-        maximum: 21
+      type: integer
+      minimum: 1
+      maximum: 21
     doublescan:
-      name: doublescan
-      in: query
       description: Effectively a boolean that determines whether or not the camera should delay image output until a new image is available.
-      schema:
-        type: integer
-        minimum: 0
-        maximum: 1
+      type: integer
+      minimum: 0
+      maximum: 1
     ssn:
-      name: ssn
-      in: query
       description: |
         Stream identifier — distinguishes multiple streams from one another. Use a unique ssn for each stream with a unique image size, quality and/or frame rate. Each camera supports up to eight simultaneous non-identical streams. Each client must have a unique (ip:ssn)
-      schema:
-        type: integer
-        minimum: 1
-        maximum: 65535
+      type: integer
+      minimum: 1
+      maximum: 65535
     iframe:
-      name: iframe
-      in: query
       description: |
         Effectively a boolean (0 or 1). Set to 1 will force the camera to return an Intra frame (I-frame) with a corresponding SPS and PPS as an IDR slice, so that the stream is decodable from this point. When opening a new stream (as when changing the image size and/or frame rate) the I-frame is sent automatically regardless of the input value of `iframe`. To reduce the stream size, reduce the frequency of `iframe = 1` in requests. You can set the P-frames for any of the streams sent by the camera is set using
         one of the following HTTP commands :
@@ -2102,429 +2064,335 @@ components:
 
         http://camera_ip/set?keyframeinterval=(0..100)
         When the on-camera counter of P-frames fills up, the camera will return an I-frame even if iframe in the request is set to 0. To find out whether an I-frame was received, check the HTTP Content Type.
-      schema:
-        type: integer
-        maximum: 1
-        minimum: 0
+      type: integer
+      maximum: 1
+      minimum: 0
     bitrate:
-      name: bitrate
-      in: query
       description: |
         Sets a constant bitrate in kilobits per second. If this parameter is present in the request, the QP parameter is ignored, and the camera adjusts quantization parameters automatically to maintain the specified bitrate.
-      schema:
-        type: integer
-        minimum: 1
-        maximum: 65535
+      type: integer
+      minimum: 1
+      maximum: 65535
     intra_period:
-      name: intra_period
-      in: query
       description: |
         Valid when requesting a non-zero bitrate and periodically requesting `iframe=1`. Specifies the intra-frame period during which you are sending requests with `iframe=1`. If you do not specify `intra_period`, bitrate control will not function correctly unless the actual period of sending iframe=1 requests is the same as the number of P-frames specified in register 3:21 of the camera via one of the commands described above. If you do not request `iframe=1` at all, then the `intra_period` parameter is not required and bitrate control will rely on the number of P-frames set in register 3:21. 
-      schema:
-        type: integer
-        minimum: 0
-        maximum: 255
+      type: integer
+      minimum: 0
+      maximum: 255
     fps:
-      name: fps
-      in: query
       description: Get or set the camera framerate. values over the camera's famerate will return the camera's maximum framerate (model dependent).
-      schema:
-        type: integer
-        minimum: 0
-        maximum: 30
+      type: integer
+      minimum: 0
+      maximum: 30
     channel:
-      name: channel
-      in: query
       description: |
         If `upscaling=on`, use the channel parameter to retrieve color or monochrome images from the camera.
-      schema:
-        type: string
-        enum:
-          - color
-          - mono
+      type: string
+      enum:
+        - color
+        - mono
     keyframe:
-      name: keyframe
-      in: query
       description: |
         Get or set key frame setting. Yields an I-frame on the next available frame.
-      schema:
-        type: boolean
+      type: boolean
     keyframeinterval:
-      name: keyframeinterval
-      in: query
       description: |
         Get or set the key frame interval.
 
         * For non-4K models the maximum limit is 100
         * The numerical value in “set?keyframeinterval=(0…65535)” represents the P-frame count between two consecutive key frames (I-frames)
-      schema:
-        type: integer
-        minimum: 0
-        maximum: 200
-        default: 50
+      type: integer
+      minimum: 0
+      maximum: 200
+      default: 50
     rtspport:
-      name: rtspport
-      in: query
       description: |
         Get or set the RTSP port.
-      schema:
-        type: integer
-        minimum: 0
-        maximum: 65535
-        default: 554
+      type: integer
+      minimum: 0
+      maximum: 65535
+      default: 554
     spacialfilter:
-      name: spacialfilter
-      in: query
       description: |
         Get or set the low-light noise filter.
-      schema:
-        type: integer
-        minimum: 0
-        maximum: 100
+      type: integer
+      minimum: 0
+      maximum: 100
     name:
-      name: name
-      in: query
       description: |
         Get or set the camera name.
-      schema:
-        type: string
-        minLength: 0
-        maxLength: 32
+      type: string
+      minLength: 0
+      maxLength: 32
     mtu:
-      name: mtu
-      in: query
       description: |
         Get or set the MTU size.
-      schema:
-        type: integer
-        minimum: 512
-        maximum: 1500
+      type: integer
+      minimum: 512
+      maximum: 1500
     ip:
-      name: ip
-      in: query
       description: |
         Get or set the camera's IP address.
-      schema:
-        type: string
-        pattern: '^([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])$'
+      type: string
+      pattern: '^([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])$'
     subnetmask:
-      name: subnetmask
-      in: query
       description: |
         Get or set the camera's subnet mask.
-      schema:
-        type: string
-        pattern: '^([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])$'
+      type: string
+      pattern: '^([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])$'
     gateway:
-      name: gateway
-      in: query
       description: |
         Get or set the camera's default gateway.
-      schema:
-        type: string
-        pattern: '^([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])$'
+      type: string
+      pattern: '^([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])$'
     eth_negotiation:
-      name: eth_negotiation
-      in: query
       description: |
         When set to auto, auto negotiation is enabled. Connected devices will first share their transmission capabilities, such as speed and duplex mode, and then choose the highest performance transmission mode they both support.
 
         When set to fixed, the camera uses a transmission speed of 100Mb and full duplex mode.
-      schema:
-        type: string
-        enum:
-          - auto
-          - fixed
+      type: string
+      enum:
+        - auto
+        - fixed
     features:
-      name: features
-      in: query
       description: |
         Returns an integer for enabled features. Integers that are not returned are not enabled.
-      schema:
-        type: integer
+      type: integer
     audioinput:
-      name: audioinput
-      in: query
       description: |
         The source of audio input.
-      schema:
-        type: string
-        enum:
-          - mic
-          - linein
+      type: string
+      enum:
+        - mic
+        - linein
     linein_volume:
-      name: linein_volume
-      in: query
       description: |
         Volume of line-in audio.
-      schema:
-        type: integer
-        minimum: 0
-        maximum: 45
+      type: integer
+      minimum: 0
+      maximum: 45
     mic_boost:
-      name: mic_boost
-      in: query
       description: |
         Volume of microphone-in audio.
-      schema:
-        type: integer
-        minimum: 0
-        maximum: 2
+      type: integer
+      minimum: 0
+      maximum: 2
     piris:
-      name: piris
-      in: query
       description: |
         Enable/disable P-iris
-      schema:
-        type: string
-        enum:
-          - 'on'
-          - 'off'
+      type: string
+      enum:
+        - 'on'
+        - 'off'
     pirispos:
-      name: pirispos
-      in: query
       description: |
         The position P-iris closes to
-      schema:
-        type: integer
-        minimum: 0
-        maximum: 255
+      type: integer
+      minimum: 0
+      maximum: 255
     equalbright:
-      name: equalbright
-      in: query
       description: |
         Equalize brightness across sensors in a multisensor camera.
-      schema:
-        type: string
-        enum:
-          - 'on'
-          - 'off'
+      type: string
+      enum:
+        - 'on'
+        - 'off'
     equalcolor:
-      name: equalcolor
-      in: query
       description: |
         Equalize color across sensors in a multisensor camera.
-      schema:
-        type: string
-        enum:
-          - 'on'
-          - 'off'
+      type: string
+      enum:
+        - 'on'
+        - 'off'
     vertical_alignment:
-      name: vertical_alignment
-      in: query
       description: |
         Align sensors in a multisensor camera.
-      schema:
-        type: string
-        enum:
-          - 'on'
-          - 'off'
+      type: string
+      enum:
+        - 'on'
+        - 'off'
     vertical_shift:
-      name: vertical_shift
-      in: query
       description: |
         Shift sensors vertically.
-      schema:
-        type: integer
+      type: integer
     piris_ref_channel:
-      name: piris_ref_channel
-      in: query
       description: |
         Set the P-iris reference channel for a multi-channel camera.
-      schema:
-        type: integer
+      type: integer
     exp_ref_channel:
-      name: exp_ref_channel
-      in: query
       description: |
         Set the WDR reference channel for a multi-channel camera.
-      schema:
-        oneOf:
-          - type: integer
-          - type: string
-            enum: [off]
+      oneOf:
+        - type: integer
+        - type: string
+          enum: [off]
     ir:
-      name: ir
-      in: query
       description: |
         Infrafred light control. `on` enables IR in night mode; `alwayson` enables IR always.
-      schema:
-        type: string
-        enum:
-          - 'on'
-          - alwayson
-          - 'off'
+      type: string
+      enum:
+        - 'on'
+        - alwayson
+        - 'off'
     make:
-      name: make
-      in: query
       description: |
         Get the make of the camera.
-      schema:
-        type: string
+      type: string
     white_balance:
-      name: white_balance
-      in: query
       description: |
         White balance control.
-      schema:
-        type: string
-        enum:
-          - 'on'
-          - 'off'
+      type: string
+      enum:
+        - 'on'
+        - 'off'
     wbwndctrl:
-      name: wbwndctrl
-      in: query
       description: |
         White balance window control.
-      schema:
-        type: string
-        enum:
-          - 'on'
-          - 'off'
+      type: string
+      enum:
+        - 'on'
+        - 'off'
     wbwndleft:
-      name: wbwndleft
-      in: query
       description: |
         White balance window left start value. Maximum values depend on your sensor size.
-      schema:
-        type: integer
-        minimum: 0
+      type: integer
+      minimum: 0
     wbwndtop:
-      name: wbwndtop
-      in: query
       description: |
         White balance window top start value. Maximum values depend on your sensor size.
-      schema:
-        type: integer
-        minimum: 0
+      type: integer
+      minimum: 0
     wbwndwidth:
-      name: wbwndwidth
-      in: query
       description: |
         White balance window width, beginning from the `wbwndleft` value. Maximum values depend on your sensor size.
-      schema:
-        type: integer
-        minimum: 0
+      type: integer
+      minimum: 0
     wbwndheight:
-      name: wbwndheight
-      in: query
       description: |
         White balance window height, beginning from the `wbwndtop` value. Maximum values depend on your sensor size.
-      schema:
-        type: integer
-        minimum: 0
+      type: integer
+      minimum: 0
     ntpserver_ip:
-      name: ntpserver_ip
-      in: query
       description: |
         NTP server address.
-      schema:
-        type: string
-        pattern: '^([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])$'
+      type: string
+      pattern: '^([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])$'
     enclosure:
-      name: enclosure
-      in: query
       description: |
         Returns the camera's model name. Provide `code` to return the model type number.
-      schema:
-        type: string
-        enum:
-          - code
+      type: string
+      enum:
+        - code
     gamma:
-      name: gamma
-      in: query
       description: |
         Gamma for single sensor and Surroundvideo1 cameras.
-      schema:
-        type: integer
-        minimum: 0
-        maximum: 100
+      type: integer
+      minimum: 0
+      maximum: 100
     gamma2:
-      name: gamma2
-      in: query
       description: |
         Gamma for the second sensor in dual sensor cameras.
-      schema:
-        type: integer
-        minimum: 0
-        maximum: 100
+      type: integer
+      minimum: 0
+      maximum: 100
     bandwidthsaving:
-      name: bandwidthsaving
-      in: query
       description: |
         Bandwidth saving mode settings.
-      schema:
-        type: string
-        enum:
-          - 'on'
-          - 'off'
+      type: string
+      enum:
+        - 'on'
+        - 'off'
     lowpower:
-      name: lowpower
-      in: query
       description: |
         Low power mode settings.
-      schema:
-        type: string
-        enum:
-          - 'on'
-          - 'off'
+      type: string
+      enum:
+        - 'on'
+        - 'off'
     motion_compensation:
-      name: motion_compensation
-      in: query
       description: |
         Motion compensation settings.
-      schema:
-        type: string
-        enum:
-          - 'on'
-          - 'off'
+      type: string
+      enum:
+        - 'on'
+        - 'off'
     adjustable_ir:
-      name: adjustable_ir
-      in: query
       description: |
         Adjustable IR light settings.
-      schema:
-        type: string
-        enum:
-          - adaptive
-          - preset
-          - disabled
+      type: string
+      enum:
+        - adaptive
+        - preset
+        - disabled
     irwidepos:
-      name: irwidepos
-      in: query
       description: |
         The adjustable intensity of wide IR lights.
-      schema:
-        type: integer
-        minimum: 0
-        maximum: 7
+      type: integer
+      minimum: 0
+      maximum: 7
     irtelepos:
-      name: irtelpos
-      in: query
       description: |
         The adjustable intensity of tele IR lights.
-      schema:
-        type: integer
-        minimum: 0
-        maximum: 7
+      type: integer
+      minimum: 0
+      maximum: 7
     snapstream:
-      name: snapstream
-      in: query
       description: |
         Snapstream on/off setting.
-      schema:
-        type: string
-        enum:
-          - 'on'
-          - 'off'
+      type: string
+      enum:
+        - 'on'
+        - 'off'
     sensorcount:
-      name: sensorcount
-      in: query
       description: |
         Returns the sensor count. Use the sensor count to determine the channels you want to get or set when 
+      type: integer
+  parameters:
+    pan:
+      name: pan
+      in: query
+      description: |
+        Set a pan value.
       schema:
         type: integer
-  parameters:
+      allowEmptyValue: true
+    tilt:
+      name: tilt
+      in: query
+      description: |
+        Set a tilt value.
+      schema:
+        type: integer
+      allowEmptyValue: true
+    ptz:
+      name: ptz
+      in: query
+      description: |
+        Use to engage, record, or save a preset.
+      schema:
+        oneOf:
+          - type: string
+            description: |
+              Performs 3 different actions:
+              
+              * Use `preset1` or `preset2` to engage a preset.
+              * Use `record_preset` or `record_preset2` to record to record pan, tilt, and zoom steps for the preset.
+              * Use `save_preset` to save a preset that is currently set to record. You cannot record 2 presets simultaneously.
+              * Use `home` to send the camera to the home position.
+            enum: [preset1, preset2, record_preset1, record_preset2, save_preset] 
+          - type: integer
+            description: Use to move to all modules to a preset postion. For example, a value of `270` moves all modules to a 270 degree preset position.
+    switcher:
+      name: switcher
+      in: query
+      description: |
+        Run this command to detect a pan module collision with another module and if module 2 is in home.
+
+        * Bit 0 to 3 of the returned value are the status of collision sensor on channel 1 to 4. 
+        * Bit 4 is the home position sensor status.
+      schema:
+        type: boolean
+      allowEmptyValue: true
     ipv6dhcp:
       name: ipv6dhcp
       in: query
@@ -3182,8 +3050,8 @@ components:
         oneOf:
           - type: string
             description: ASCII symbols representing your password.
-            minlength: 1
-            maxlength: 16
+            minLength: 1
+            maxLength: 16
             format: password
           - type: string
             description: The keyword to erase the current password.
@@ -3198,8 +3066,8 @@ components:
         oneOf:
           - type: string
             description: ASCII symbols representing your password.
-            minlength: 1
-            maxlength: 16
+            minLength: 1
+            maxLength: 16
             format: password
           - type: string
             description: The keyword to erase the current password.
@@ -3553,7 +3421,6 @@ components:
       name: res
       in: query
       description: The resolution MJPEGs you want to return
-      required: false
       schema:
         type: string
         enum:
@@ -3564,7 +3431,6 @@ components:
       in: query
       description: |
         Left coordinate, used to offset the image. This value should be divisible by 32 if `res=full` or 64 if `res=half`.
-      required: false
       schema:
         type: integer
         format: int32
@@ -3581,7 +3447,6 @@ components:
       in: query
       description: |
         Right coordinate, used to offset the image. This value should be divisible by 32 if `res=full` or 64 if `res=half`.
-      required: false
       schema:
         type: integer
         format: int32
